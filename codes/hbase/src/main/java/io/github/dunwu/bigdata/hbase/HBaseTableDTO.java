@@ -2,69 +2,75 @@ package io.github.dunwu.bigdata.hbase;
 
 /**
  * @author Zhang Peng
- * @date 2019-03-04
+ * @since 2019-03-04
  */
 public class HBaseTableDTO {
-    private String tableName;
-    private String row;
-    private String colFamily;
-    private String col;
-    private String val;
 
-    public HBaseTableDTO() {}
+	private String tableName;
 
-    public HBaseTableDTO(String row, String colFamily, String col, String val) {
-        this.row = row;
-        this.colFamily = colFamily;
-        this.col = col;
-        this.val = val;
-    }
+	private String row;
 
-    public HBaseTableDTO(String tableName, String row, String colFamily, String col, String val) {
-        this.tableName = tableName;
-        this.row = row;
-        this.colFamily = colFamily;
-        this.col = col;
-        this.val = val;
-    }
+	private String colFamily;
 
-    public String getTableName() {
-        return tableName;
-    }
+	private String col;
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
+	private String val;
 
-    public String getRow() {
-        return row;
-    }
+	public HBaseTableDTO() {}
 
-    public void setRow(String row) {
-        this.row = row;
-    }
+	public HBaseTableDTO(String row, String colFamily, String col, String val) {
+		this.row = row;
+		this.colFamily = colFamily;
+		this.col = col;
+		this.val = val;
+	}
 
-    public String getColFamily() {
-        return colFamily;
-    }
+	public HBaseTableDTO(String tableName, String row, String colFamily, String col, String val) {
+		this.tableName = tableName;
+		this.row = row;
+		this.colFamily = colFamily;
+		this.col = col;
+		this.val = val;
+	}
 
-    public void setColFamily(String colFamily) {
-        this.colFamily = colFamily;
-    }
+	public String getTableName() {
+		return tableName;
+	}
 
-    public String getCol() {
-        return col;
-    }
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
 
-    public void setCol(String col) {
-        this.col = col;
-    }
+	public String getRow() {
+		return row;
+	}
 
-    public String getVal() {
-        return val;
-    }
+	public void setRow(String row) {
+		this.row = row;
+	}
 
-    public void setVal(String val) {
-        this.val = val;
-    }
+	public String getColFamily() {
+		return colFamily;
+	}
+
+	public void setColFamily(String colFamily) {
+		this.colFamily = colFamily;
+	}
+
+	public String getCol() {
+		return col;
+	}
+
+	public void setCol(String col) {
+		this.col = col;
+	}
+
+	public String getVal() {
+		return val;
+	}
+
+	public void setVal(String val) {
+		this.val = val;
+	}
+
 }
