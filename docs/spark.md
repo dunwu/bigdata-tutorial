@@ -1,21 +1,12 @@
----
-title: Spark
-date: 2018-09-03
-categories:
-  - bigdata
-tags:
-  - bigdata
----
-
 # Spark
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
 - [Spark 简介](#spark-简介)
-    - [Spark 概念](#spark-概念)
-    - [Spark 特点](#spark-特点)
+  - [Spark 概念](#spark-概念)
+  - [Spark 特点](#spark-特点)
 - [Spark 原理](#spark-原理)
-    - [编程模型](#编程模型)
+  - [编程模型](#编程模型)
 
 <!-- /TOC -->
 
@@ -91,4 +82,3 @@ tags:
   - 子 RDD 如果部分或全部分区数据丢失或损坏，必须从所有父 RDD 分区重新计算
   - 相对于窄依赖，宽依赖付出的代价要高很多，尽量避免使用
   - 例如：groupByKey、reduceByKey、sortByKey
-

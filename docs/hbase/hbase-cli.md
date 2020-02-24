@@ -1,8 +1,3 @@
----
-title: HBase 命令
-date: 2019-03-06
----
-
 # HBase 命令
 
 <!-- TOC depthFrom:2 depthTo:3 -->
@@ -88,7 +83,7 @@ hbase> scan 't1', {ROWPREFIXFILTER => 'row2', FILTER => "
 hbase> scan 't1', {FILTER =>
   org.apache.hadoop.hbase.filter.ColumnPaginationFilter.new(1, 0)}
 hbase> scan 't1', {CONSISTENCY => 'TIMELINE'}
-For setting the Operation Attributes 
+For setting the Operation Attributes
 hbase> scan 't1', { COLUMNS => ['c1', 'c2'], ATTRIBUTES => {'mykey' => 'myvalue'}}
 hbase> scan 't1', { COLUMNS => ['c1', 'c2'], AUTHORIZATIONS => ['PRIVATE','SECRET']}
 For experts, there is an additional option -- CACHE_BLOCKS -- which

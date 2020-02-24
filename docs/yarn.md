@@ -1,13 +1,3 @@
----
-title: YARN
-date: 2018-09-03
-categories:
-  - bigdata
-tags:
-  - bigdata
-  - hadoop
----
-
 # YARN
 
 > YARN 的目标是解决 MapReduce 的缺陷。
@@ -17,15 +7,15 @@ tags:
 - [MapReduce 的缺陷（Hadoop 1.x）](#mapreduce-的缺陷hadoop-1x)
 - [YARN 简介](#yarn-简介)
 - [YARN 系统架构](#yarn-系统架构)
-    - [ResourceManager（RM）](#resourcemanagerrm)
-    - [NodeManager（NM）](#nodemanagernm)
-    - [ApplicationMaster（AM）](#applicationmasteram)
-    - [Container](#container)
+  - [ResourceManager（RM）](#resourcemanagerrm)
+  - [NodeManager（NM）](#nodemanagernm)
+  - [ApplicationMaster（AM）](#applicationmasteram)
+  - [Container](#container)
 - [YARN 高可用](#yarn-高可用)
 - [YARN 资源调度策略](#yarn-资源调度策略)
-    - [FIFO Scheduler（先进先出调度器）](#fifo-scheduler先进先出调度器)
-    - [Capacity Scheduler（容量调度器）](#capacity-scheduler容量调度器)
-    - [Fair Scheduler（公平调度器）](#fair-scheduler公平调度器)
+  - [FIFO Scheduler（先进先出调度器）](#fifo-scheduler先进先出调度器)
+  - [Capacity Scheduler（容量调度器）](#capacity-scheduler容量调度器)
+  - [Fair Scheduler（公平调度器）](#fair-scheduler公平调度器)
 - [资源](#资源)
 
 <!-- /TOC -->

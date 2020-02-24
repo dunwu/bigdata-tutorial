@@ -1,13 +1,3 @@
----
-title: Flume
-date: 2018-09-04
-categories:
-  - bigdata
-tags:
-  - bigdata
-  - hadoop
----
-
 # Flume
 
 > **Sqoop 是一个主要在 Hadoop 和关系数据库之间进行批量数据迁移的工具。**
@@ -15,12 +5,12 @@ tags:
 <!-- TOC depthFrom:2 depthTo:3 -->
 
 - [Flume 简介](#flume-简介)
-    - [什么是 Flume ？](#什么是-flume-)
-    - [应用场景](#应用场景)
+  - [什么是 Flume ？](#什么是-flume-)
+  - [应用场景](#应用场景)
 - [Flume 原理](#flume-原理)
-    - [Flume 基本概念](#flume-基本概念)
-    - [Flume 基本组件](#flume-基本组件)
-    - [Flume 数据流](#flume-数据流)
+  - [Flume 基本概念](#flume-基本概念)
+  - [Flume 基本组件](#flume-基本组件)
+  - [Flume 数据流](#flume-数据流)
 - [资源](#资源)
 
 <!-- /TOC -->
@@ -79,10 +69,9 @@ Flume 是一个分布式海量数据采集、聚合和传输系统。
 
 优点：架构简单，使用方便，占用资源较少
 缺点
-如果采集的数据源或Agent较多，将Event写入到HDFS会产生很多小文件
-外部存储升级维护或发生故障，需对采集层的所有Agent做处理，人力成本较高，系统稳定性较差
+如果采集的数据源或 Agent 较多，将 Event 写入到 HDFS 会产生很多小文件
+外部存储升级维护或发生故障，需对采集层的所有 Agent 做处理，人力成本较高，系统稳定性较差
 系统安全性较差
 数据源管理较混乱
-
 
 ## 资源

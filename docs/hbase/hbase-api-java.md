@@ -1,16 +1,4 @@
----
-title: HBase Java API
-date: 2019-03-06
----
-
 # HBase Java API
-
-<!-- TOC depthFrom:2 depthTo:3 -->
-
-- [更多内容](#更多内容)
-    - [参考资料](#参考资料)
-
-<!-- /TOC -->
 
 ## 更多内容
 

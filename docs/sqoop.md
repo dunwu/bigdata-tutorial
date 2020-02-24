@@ -1,13 +1,3 @@
----
-title: Sqoop
-date: 2018-09-04
-categories:
-  - bigdata
-tags:
-  - bigdata
-  - hadoop
----
-
 # Sqoop
 
 > **Sqoop 是一个主要在 Hadoop 和关系数据库之间进行批量数据迁移的工具。**
@@ -15,11 +5,11 @@ tags:
 <!-- TOC depthFrom:2 depthTo:3 -->
 
 - [Sqoop 简介](#sqoop-简介)
-    - [提供多种 Sqoop 连接器](#提供多种-sqoop-连接器)
-    - [Sqoop 版本](#sqoop-版本)
+  - [提供多种 Sqoop 连接器](#提供多种-sqoop-连接器)
+  - [Sqoop 版本](#sqoop-版本)
 - [Sqoop 原理](#sqoop-原理)
-    - [导入](#导入)
-    - [导出](#导出)
+  - [导入](#导入)
+  - [导出](#导出)
 
 <!-- /TOC -->
 

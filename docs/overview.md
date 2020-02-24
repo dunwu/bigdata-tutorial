@@ -1,28 +1,19 @@
----
-title: 大数据简介
-date: 2018-09-03
-categories:
-- bigdata
-tags:
-- bigdata
----
-
 # 大数据简介
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
 - [简介](#简介)
-    - [什么是大数据](#什么是大数据)
-    - [应用场景](#应用场景)
-    - [Hadoop 编年史](#hadoop-编年史)
+  - [什么是大数据](#什么是大数据)
+  - [应用场景](#应用场景)
+  - [Hadoop 编年史](#hadoop-编年史)
 - [技术体系](#技术体系)
-    - [HDFS](#hdfs)
-    - [MapReduce](#mapreduce)
-    - [Spark](#spark)
-    - [YARN](#yarn)
-    - [Hive](#hive)
-    - [HBase](#hbase)
-    - [ElasticSearch](#elasticsearch)
+  - [HDFS](#hdfs)
+  - [MapReduce](#mapreduce)
+  - [Spark](#spark)
+  - [YARN](#yarn)
+  - [Hive](#hive)
+  - [HBase](#hbase)
+  - [ElasticSearch](#elasticsearch)
 - [术语](#术语)
 - [资源](#资源)
 
@@ -45,18 +36,18 @@ tags:
 
 基于大数据的实时流处理
 
-### Hadoop 编年史 
+### Hadoop 编年史
 
-| 时间    | 事件                                                             |
-|:--------|:-----------------------------------------------------------------|
-| 2003.01 | Google发表了Google File System论文                               |
-| 2004.01 | Google发表了MapReduce论文                                        |
-| 2006.02 | Apache Hadoop项目正式启动，并支持MapReduce和HDFS独立发展         |
-| 2006.11 | Google发表了Bigtable论文                                         |
-| 2008.01 | Hadoop成为Apache顶级项目                                         |
-| 2009.03 | Cloudera推出世界上首个Hadoop发行版——CDH，并完全开放源码          |
-| 2012.03 | HDFS NameNode HA加入Hadoop主版本                                 |
-| 2014.02 | Spark代替MapReduce成为Hadoop的缺省计算引擎，并成为Apache顶级项目 |
+| 时间    | 事件                                                                    |
+| :------ | :---------------------------------------------------------------------- |
+| 2003.01 | Google 发表了 Google File System 论文                                   |
+| 2004.01 | Google 发表了 MapReduce 论文                                            |
+| 2006.02 | Apache Hadoop 项目正式启动，并支持 MapReduce 和 HDFS 独立发展           |
+| 2006.11 | Google 发表了 Bigtable 论文                                             |
+| 2008.01 | Hadoop 成为 Apache 顶级项目                                             |
+| 2009.03 | Cloudera 推出世界上首个 Hadoop 发行版——CDH，并完全开放源码              |
+| 2012.03 | HDFS NameNode HA 加入 Hadoop 主版本                                     |
+| 2014.02 | Spark 代替 MapReduce 成为 Hadoop 的缺省计算引擎，并成为 Apache 顶级项目 |
 
 ## 技术体系
 

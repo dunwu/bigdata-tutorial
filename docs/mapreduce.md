@@ -1,35 +1,25 @@
----
-title: MapReduce
-date: 2018-09-03
-categories:
-  - bigdata
-tags:
-  - bigdata
-  - hadoop
----
-
 # MapReduce
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
 - [MapReduce 简介](#mapreduce-简介)
-    - [概念](#概念)
-    - [思想](#思想)
-    - [特点](#特点)
-    - [适用场景](#适用场景)
-    - [不适用场景](#不适用场景)
+  - [概念](#概念)
+  - [思想](#思想)
+  - [特点](#特点)
+  - [适用场景](#适用场景)
+  - [不适用场景](#不适用场景)
 - [MapReduce 原理](#mapreduce-原理)
-    - [Job & Task（作业与任务）](#job--task作业与任务)
-    - [Split（切片）](#split切片)
-    - [Map 阶段（映射）](#map-阶段映射)
-    - [Reduce 阶段（化简）](#reduce-阶段化简)
-    - [Shuffle 阶段（洗牌）](#shuffle-阶段洗牌)
+  - [Job & Task（作业与任务）](#job--task作业与任务)
+  - [Split（切片）](#split切片)
+  - [Map 阶段（映射）](#map-阶段映射)
+  - [Reduce 阶段（化简）](#reduce-阶段化简)
+  - [Shuffle 阶段（洗牌）](#shuffle-阶段洗牌)
 - [Shuffle 详解](#shuffle-详解)
-    - [Map 端](#map-端)
-    - [Reduce 端](#reduce-端)
+  - [Map 端](#map-端)
+  - [Reduce 端](#reduce-端)
 - [作业运行模式](#作业运行模式)
-    - [JobTracker/TaskTracker 模式（Hadoop 1.X）](#jobtrackertasktracker-模式hadoop-1x)
-    - [YARN 模式（Hadoop 2.X）](#yarn-模式hadoop-2x)
+  - [JobTracker/TaskTracker 模式（Hadoop 1.X）](#jobtrackertasktracker-模式hadoop-1x)
+  - [YARN 模式（Hadoop 2.X）](#yarn-模式hadoop-2x)
 
 <!-- /TOC -->
 
@@ -146,4 +136,3 @@ Reduce 任务从多个 Map 输出文件中主动抓取（Fetch）属于自己的
 - 提交作业
 - 查看作业
 - 终止作业
-
