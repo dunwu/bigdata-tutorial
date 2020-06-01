@@ -1,24 +1,5 @@
 # 大数据简介
 
-<!-- TOC depthFrom:2 depthTo:3 -->
-
-- [简介](#简介)
-  - [什么是大数据](#什么是大数据)
-  - [应用场景](#应用场景)
-  - [Hadoop 编年史](#hadoop-编年史)
-- [技术体系](#技术体系)
-  - [HDFS](#hdfs)
-  - [MapReduce](#mapreduce)
-  - [Spark](#spark)
-  - [YARN](#yarn)
-  - [Hive](#hive)
-  - [HBase](#hbase)
-  - [ElasticSearch](#elasticsearch)
-- [术语](#术语)
-- [资源](#资源)
-
-<!-- /TOC -->
-
 ## 简介
 
 ### 什么是大数据

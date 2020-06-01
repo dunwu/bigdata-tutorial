@@ -29,7 +29,7 @@
 
 ### 其他
 
-- [MapReduce](docs/mapreduce.md)
+- [MapReduce](docs/mapreduce/mapreduce.md)
 - [YARN](docs/yarn.md)
 
 ## 学习资源 💎
