@@ -32,7 +32,14 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 > [HDFS](hbase) 是一个列式存储数据库。
 
 - [HBase 命令](hbase/hbase-cli.md)
+- [HBase Java API](hbase/hbase-api.md)
 - [HBase 配置](hbase/hbase-ops.md)
+
+### ZooKeeper
+
+- [ZooKeeper 应用指南](zookeeper/zookeeper-quickstart.md)
+- [ZooKeeper 运维](zookeeper/zookeeper-ops.md)
+- [ZooKeeper Java API](zookeeper/zookeeper-api.md)
 
 ### 其他
 
