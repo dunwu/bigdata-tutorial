@@ -5,11 +5,11 @@
 
 	<groupId>io.github.dunwu.bigdata</groupId>
 	<artifactId>bigdata-tutorial</artifactId>
-	<name>BigData</name>
+	<name>大数据</name>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>hbase</module>
+		<module>codes/hbase</module>
 	</modules>
 </project>
