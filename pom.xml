@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.github.dunwu.bigdata</groupId>
-	<artifactId>bigdata-tutorial</artifactId>
-	<name>大数据</name>
-	<version>1.0.0</version>
-	<packaging>pom</packaging>
+  <groupId>io.github.dunwu.bigdata</groupId>
+  <artifactId>bigdata-tutorial</artifactId>
+  <name>大数据</name>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
 
-	<modules>
-		<module>codes/hbase</module>
-	</modules>
+  <modules>
+    <module>codes/hbase</module>
+    <module>codes/zookeeper</module>
+  </modules>
 </project>
