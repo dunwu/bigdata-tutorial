@@ -29,8 +29,6 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 
 ### HBASE
 
-> [HDFS](hbase) 是一个列式存储数据库。
-
 - [HBase 命令](hbase/hbase-cli.md)
 - [HBase Java API](hbase/hbase-api.md)
 - [HBase 配置](hbase/hbase-ops.md)
@@ -38,8 +36,14 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 ### ZooKeeper
 
 - [ZooKeeper 应用指南](zookeeper/zookeeper-quickstart.md)
-- [ZooKeeper 运维](zookeeper/zookeeper-ops.md)
 - [ZooKeeper Java API](zookeeper/zookeeper-api.md)
+- [ZooKeeper 运维](zookeeper/zookeeper-ops.md)
+
+### Kafka
+
+- [Kafka 应用指南基础篇](kafka/kafka-basic.md)
+- [Kafka 应用指南进阶篇](kafka/kafka-advance.md)
+- [Kafka 运维指南](kafka/kafka-ops.md)
 
 ### 其他
 

@@ -30,6 +30,26 @@ module.exports = {
         lastUpdated: "上次更新",
         nav: [
           {
+            text: "Hive",
+            link: "/hive/",
+          },
+          {
+            text: "Hdfs",
+            link: "/hdfs/",
+          },
+          {
+            text: "Hbase",
+            link: "/hbase/",
+          },
+          {
+            text: "ZooKeeper",
+            link: "/zookeeper/",
+          },
+          {
+            text: "Kafka",
+            link: "/kafka/",
+          },
+          {
             text: "✨ Java系列",
             ariaLabel: "Java",
             items: [

@@ -1,4 +1,4 @@
-# HBase 入门指南
+# HBase 应用指南
 
 ## 一、HBase 简介
 

@@ -22,8 +22,7 @@
 
 ### HBASE
 
-> [HDFS](docs/hbase) 是一个列式存储数据库。
-
+- [HBase 应用指南](docs/hbase/hbase-quickstart.md)
 - [HBase 命令](docs/hbase/hbase-cli.md)
 - [HBase Java API](docs/hbase/hbase-api.md)
 - [HBase 配置](docs/hbase/hbase-ops.md)
@@ -33,6 +32,12 @@
 - [ZooKeeper 应用指南](docs/zookeeper/zookeeper-quickstart.md)
 - [ZooKeeper Java API](docs/zookeeper/zookeeper-api.md)
 - [ZooKeeper 运维](docs/zookeeper/zookeeper-ops.md)
+
+### Kafka
+
+- [Kafka 应用指南基础篇](docs/kafka/kafka-basic.md)
+- [Kafka 应用指南进阶篇](docs/kafka/kafka-advance.md)
+- [Kafka 运维指南](docs/kafka/kafka-ops.md)
 
 ### 其他
 
