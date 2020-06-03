@@ -17,7 +17,7 @@ public class ZooKeeperDeleteExample {
 
     private static ZooKeeperConnectionExample conn;
 
-    public static void main(String[] args) throws InterruptedException, KeeperException {
+    public static void main(String[] args) throws InterruptedException {
         String path = "/MyFirstZnode"; // Assign path to the znode
 
         try {

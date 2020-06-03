@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.dunwu.bigdata</groupId>
-  <artifactId>zookeeper</artifactId>
-  <name>大数据 - ZooKeeper</name>
+  <artifactId>javatech-kafka</artifactId>
+  <name>大数据 - Kafka - API - 1.x</name>
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
@@ -19,24 +19,16 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.zookeeper</groupId>
-      <artifactId>zookeeper</artifactId>
-      <version>3.5.7</version>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.curator</groupId>
-      <artifactId>curator-recipes</artifactId>
-      <version>4.3.0</version>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-streams</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.github.dunwu</groupId>
-      <artifactId>dunwu-tool-core</artifactId>
-      <version>0.5.6</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
     </dependency>
   </dependencies>
 </project>
