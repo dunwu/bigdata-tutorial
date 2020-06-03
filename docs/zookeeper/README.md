@@ -1,12 +1,14 @@
 # ZooKeeper
 
-## 内容
+> **ZooKeeper 是一个分布式协调服务**。
+
+## 📖 内容
 
 - [ZooKeeper 应用指南](zookeeper-quickstart.md)
 - [ZooKeeper Java API](zookeeper-api.md)
 - [ZooKeeper 运维](zookeeper-ops.md)
 
-## 资料
+## 📚 资料
 
 - **官方**
   - [ZooKeeper 官网](http://zookeeper.apache.org/)
@@ -23,3 +25,7 @@
   - [深入浅出 Zookeeper（一） Zookeeper 架构及 FastLeaderElection 机制](http://www.jasongj.com/zookeeper/fastleaderelection/)
   - [Zookeeper 安装](https://www.w3cschool.cn/zookeeper/zookeeper_installation.html)
   - [Zookeeper 单机环境和集群环境搭建](https://github.com/heibaiying/BigData-Notes/blob/master/notes/installation/Zookeeper%E5%8D%95%E6%9C%BA%E7%8E%AF%E5%A2%83%E5%92%8C%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)
+
+## 🚪 传送门
+
+◾ 🏠 [BIGDATA-TUTORIAL 首页](https://github.com/dunwu/bigdata-tutorial) ◾ 🎯 [我的博客](https://github.com/dunwu/blog) ◾

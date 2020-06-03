@@ -1,6 +1,23 @@
-# BIGDATA-TUTORIAL
+<p align="center">
+    <a href="https://dunwu.github.io/bigdata-tutorial/" target="_blank" rel="noopener noreferrer">
+        <img src="http://dunwu.test.upcdn.net/common/logo/java-logo.png" alt="logo" width="100px">
+    </a>
+</p>
 
-## 教程内容 📖
+<p align="center">
+    <img src="https://badgen.net/github/license/dunwu/bigdata-tutorial" alt="license">
+</p>
+
+<h1 align="center">BIGDATA TUTORIAL</h1>
+
+> ☕ **bigdata-tutorial** 是一个大数据教程。
+>
+> - 🔁 项目同步维护：[Github](https://github.com/dunwu/bigdata-tutorial/) | [Gitee](https://gitee.com/turnon/bigdata-tutorial/)
+> - 📖 电子书阅读：[Github Pages](https://dunwu.github.io/bigdata-tutorial/) | [Gitee Pages](http://turnon.gitee.io/bigdata-tutorial/)
+>
+> 说明：下面的内容清单中，凡是有 📚 标记的技术，都已整理成详细的教程。
+
+## 📖 内容
 
 ### HDFS
 
@@ -29,6 +46,8 @@
 
 ### ZooKeeper
 
+> **[ZooKeeper](docs/zookeeper) 是一个分布式协调服务**。
+
 - [ZooKeeper 应用指南](docs/zookeeper/zookeeper-quickstart.md)
 - [ZooKeeper Java API](docs/zookeeper/zookeeper-api.md)
 - [ZooKeeper 运维](docs/zookeeper/zookeeper-ops.md)
@@ -44,7 +63,7 @@
 - [MapReduce](docs/mapreduce/mapreduce.md)
 - [YARN](docs/yarn.md)
 
-## 学习资源 💎
+## 📚 资料
 
 - [《Hadoop 权威指南：大数据的存储与分析》](https://item.jd.com/12109713.html)
 - [《Kafka 权威指南》](https://book.douban.com/subject/27665114/)
@@ -54,3 +73,7 @@
 - [《HBase 权威指南》](https://book.douban.com/subject/10748460/)
 - [《Hive 编程指南》](https://book.douban.com/subject/25791255/)
 - [BigData-Notes](https://github.com/heibaiying/BigData-Notes)
+
+## 🚪 传送门
+
+◾ 🏠 [BIGDATA-TUTORIAL 首页](https://github.com/dunwu/bigdata-tutorial) ◾ 🎯 [我的博客](https://github.com/dunwu/blog) ◾
