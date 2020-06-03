@@ -14,6 +14,7 @@
   - [ZooKeeper 官网](http://zookeeper.apache.org/)
   - [ZooKeeper 官方文档](https://cwiki.apache.org/confluence/display/ZOOKEEPER)
   - [ZooKeeper Github](https://github.com/apache/zookeeper)
+  - [Apache Curator 官网](http://curator.apache.org/)
 - **书籍**
   - [Hadoop 权威指南（第四版）](https://item.jd.com/12109713.html)
   - [从 Paxos 到 Zookeeper](https://item.jd.com/11622772.html)
