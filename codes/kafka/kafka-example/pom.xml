@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.dunwu.bigdata</groupId>
-  <artifactId>javatech-kafka</artifactId>
-  <name>大数据 - Kafka - API - 1.x</name>
+  <artifactId>kafka-example</artifactId>
+  <name>大数据 - Kafka - 示例</name>
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
@@ -21,14 +21,17 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
+      <version>2.3.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-streams</artifactId>
+      <version>2.3.1</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
     </dependency>
   </dependencies>
 </project>

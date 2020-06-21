@@ -23,7 +23,7 @@ Kafka 发送的对象叫做 `ProducerRecord` ，它有 4 个关键参数：
 
 ### 发送消息方式
 
-#### 发送并忘记
+#### 异步发送
 
 直接发送消息，不关心消息是否到达。
 
@@ -59,7 +59,7 @@ try {
 }
 ```
 
-#### 异步发送
+#### 异步回调发送
 
 代码如下，异步方式相对于“发送并忽略返回”的方式的不同在于：在异步返回时可以执行一些操作，如：抛出异常、记录错误日志。
 
@@ -203,10 +203,304 @@ try {
 
 ### 提交和偏移量
 
-更新分区当前位置的操作叫作提交。
+**更新分区当前位置的操作叫作提交**。
 
-消费者会向一个叫作 _consumer_offset 的特殊主题发送消息，消息里包含每个分区的偏移量。
+消费者会向一个叫作 `_consumer_offset` 的特殊主题发送消息，消息里包含每个分区的偏移量。如果消费者一直处于运行状态，那么偏移量就没有什么用处。不过，如果消费者发生崩溃或有新的消费者加入群组，就会**触发再均衡**，完成再均衡后，每个消费者可能分配到新的分区，而不是之前处理的那个。为了能够继续之前的工作，消费者需要读取每个分区最后一次提交的偏移量，然后从偏移量指定的地方继续处理。
+
+（1）**如果提交的偏移量小于客户端处理的最后一个消息的偏移量，那么处于两个偏移量之间的消息就会被重复处理**。
+
+![](http://dunwu.test.upcdn.net/snap/20200620162858.png)
+
+（2）**如果提交的偏移量大于客户端处理的最后一个消息的偏移量，那么处于两个偏移量之间的消息将会丢失**。
+
+![](http://dunwu.test.upcdn.net/snap/20200620162946.png)
+
+由此可知，处理偏移量，会对客户端处理数据产生影响。
+
+#### 自动提交
+
+自动提交是 Kafka 处理偏移量最简单的方式。
+
+当 `enable.auto.commit` 属性被设为 true，那么每过 `5s`，消费者会自动把从 `poll()` 方法接收到的最大偏移量提交上去。提交时间间隔由 `auto.commit.interval.ms` 控制，默认值是 `5s`。
+
+与消费者里的其他东西一样，**自动提交也是在轮询里进行的**。消费者每次在进行轮询时会检查是否该提交偏移量了，如果是，那么就会提交从上一次轮询返回的偏移量。
+
+假设我们仍然使用默认的 5s 提交时间间隔，在最近一次提交之后的 3s 发生了再均衡，再均衡之后，消费者从最后一次提交的偏移量位置开始读取消息。这个时候偏移量已经落后了 3s（因为没有达到5s的时限，并没有提交偏移量），所以在这 3s 的数据将会被重复处理。虽然可以通过修改提交时间间隔来更频繁地提交偏移量，减小可能出现重复消息的时间窗的时间跨度，不过这种情况是无法完全避免的。
+
+在使用自动提交时，每次调用轮询方法都会把上一次调用返回的偏移量提交上去，它并不知道具体哪些消息已经被处理了，所以在再次调用之前最好确保所有当前调用返回的消息都已经处理完毕（在调用 close() 方法之前也会进行自动提交）。一般情况下不会有什么问题，不过在处理异常或提前退出轮询时要格外小心。
+
+**自动提交虽然方便，不过无法避免重复消息问题**。
+
+#### 手动提交
+
+自动提交无法保证消息可靠性传输。
+
+因此，为了解决丢失消息的问题，可以通过手动提交偏移量。
+
+首先，**把  `enable.auto.commit` 设为 false，关闭自动提交**。
+
+##### （1）同步提交
+
+**使用 `commitSync()` 提交偏移量最简单也最可靠**。这个 API 会提交由 `poll()` 方法返回的最新偏移量，提交成功后马上返回，如果提交失败就抛出异常。
+
+```java
+while (true) {
+    ConsumerRecords<String, String> records = consumer.poll(100);
+    for (ConsumerRecord<String, String> record : records) {
+        System.out.printf("topic = %s, partition = %s, offset = %d, customer = %s, country = %s\n",
+            record.topic(), record.partition(),
+            record.offset(), record.key(), record.value());
+    }
+    try {
+        consumer.commitSync();
+    } catch (CommitFailedException e) {
+        log.error("commit failed", e)
+    }
+}
+```
+
+同步提交的缺点：**同步提交方式会一直阻塞，直到接收到 Broker 的响应请求，这会大大限制吞吐量**。
+
+##### （2）异步提交
+
+**在成功提交或碰到无法恢复的错误之前，`commitSync()` 会一直重试，但是 `commitAsync()` 不会**，这也是 `commitAsync()` 不好的一个地方。**它之所以不进行重试，是因为在它收到服务器响应的时候，可能有一个更大的偏移量已经提交成功**。假设我们发出一个请求用于提交偏移量 2000，这个时候发生了短暂的通信问题，服务器收不到请求，自然也不会作出任何响应。与此同时，我们处理了另外一批消息，并成功提交了偏移量 3000。如果 `commitAsync()` 重新尝试提交偏移量 2000，它有可能在偏移量 3000 之后提交成功。这个时候**如果发生再均衡，就会出现重复消息**。
+
+```java
+while (true) {
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+    for (ConsumerRecord<String, String> record : records) {
+        System.out.printf("topic = %s, partition = %s, offset = % d, customer = %s, country = %s\n ",
+            record.topic(), record.partition(), record.offset(),
+            record.key(), record.value());
+    }
+    consumer.commitAsync();
+}
+```
+
+**`commitAsync()` 也支持回调**，在 broker 作出响应时会执行回调。**回调经常被用于记录提交错误或生成度量指标，不过如果要用它来进行重试，则一定要注意提交的顺序**。
+
+```java
+while (true) {
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+    for (ConsumerRecord<String, String> record : records) {
+        System.out.printf("topic = %s, partition = %s, offset = % d, customer = %s, country = %s\n ",
+            record.topic(), record.partition(), record.offset(),
+            record.key(), record.value());
+    }
+    consumer.commitAsync(new OffsetCommitCallback() {
+        @Override
+        public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception e) {
+            if (e != null) { log.error("Commit failed for offsets {}", offsets, e); }
+        }
+    });
+}
+```
+
+> **重试异步提交**
+>
+> 可以使用一个单调递增的序列号来维护异步提交的顺序。在每次提交偏移量之后或在回调里提交偏移量时递增序列号。在进行重试前，先检查回调的序列号和即将提交的偏移量是否相等，如果相等，说明没有新的提交，那么可以安全地进行重试；如果序列号比较大，说明有一个新的提交已经发送出去了，应该停止重试。
+
+##### （3）同步和异步组合提交
+
+一般情况下，针对偶尔出现的提交失败，不进行重试不会有太大问题，因为如果提交失败是因为临时问题导致的，那么后续的提交总会有成功的。但**如果这是发生在关闭消费者或再均衡前的最后一次提交，就要确保能够提交成功**。
+
+因此，在消费者关闭前一般会组合使用 `commitSync()` 和 `commitAsync()`。
+
+```java
+try {
+    while (true) {
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+        for (ConsumerRecord<String, String> record : records) {
+            System.out.printf("topic = %s, partition = %s, offset = % d, customer = %s, country = %s\n ",
+                record.topic(), record.partition(), record.offset(), record.key(), record.value());
+        }
+        consumer.commitAsync();
+    }
+} catch (Exception e) {
+    log.error("Unexpected error", e);
+} finally {
+    try {
+        consumer.commitSync();
+    } finally {
+        consumer.close();
+    }
+}
+```
+
+##### （4）提交特定的偏移量
+
+提交偏移量的频率和处理消息批次的频率是一样的。如果想要更频繁地提交该怎么办？如果 `poll()` 方法返回一大批数据，为了避免因再均衡引起的重复处理整批消息，想要在批次中间提交偏移量该怎么办？这种情况无法通过调用 `commitSync()` 或 `commitAsync()` 来实现，因为它们只会提交最后一个偏移量，而此时该批次里的消息还没有处理完。
+
+解决办法是：**消费者 API 允许在调用 `commitSync()` 和 `commitAsync()` 方法时传进去希望提交的分区和偏移量的 map**。
+
+```java
+private int count = 0;
+private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
+
+
+while (true) {
+  ConsumerRecords<String, String> records = consumer.poll(100);
+  for (ConsumerRecord<String, String> record : records) {
+    System.out.printf("topic = %s, partition = %s, offset = % d, customer = %s, country = %s\n ",
+                      record.topic(), record.partition(), record.offset(), record.key(), record.value());
+
+    currentOffsets.put(new TopicPartition(record.topic(),
+                                          record.partition()), new
+                       OffsetAndMetadata(record.offset() + 1, "no metadata"));
+    if (count % 1000 == 0) { consumer.commitAsync(currentOffsets, null); }
+    count++;
+  }
+}
+```
+
+### 再均衡监听器
+
+如果 Kafka 触发了再均衡，我们需要在消费者失去对一个分区的所有权之前提交最后一个已处理记录的偏移量。如果消费者准备了一个缓冲区用于处理偶发的事件，那么在失去分区所有权之前，需要处理在缓冲区累积下来的记录。可能还需要关闭文件句柄、数据库连接等。
+
+在为消费者分配新分区或移除旧分区时，可以通过消费者 API 执行一些应用程序代码，在调用 `subscribe()` 方法时传进去一个 `ConsumerRebalanceListener` 实例就可以了。 `ConsumerRebalanceListener` 有两个需要实现的方法。
+
+- `public void onPartitionsRevoked(Collection partitions)` 方法会在再均衡开始之前和消费者停止读取消息之后被调用。如果在这里提交偏移量，下一个接管分区的消费者就知道该从哪里开始读取了。
+- `public void onPartitionsAssigned(Collection partitions)` 方法会在重新分配分区之后和消费者开始读取消息之前被调用。
+
+```java
+private Map<TopicPartition, OffsetAndMetadata> currentOffsets=
+  new HashMap<>();
+
+private class HandleRebalance implements ConsumerRebalanceListener { 
+    public void onPartitionsAssigned(Collection<TopicPartition>
+      partitions) { 
+    }
+
+    public void onPartitionsRevoked(Collection<TopicPartition>
+      partitions) {
+        System.out.println("Lost partitions in rebalance.
+          Committing current
+        offsets:" + currentOffsets);
+        consumer.commitSync(currentOffsets); 
+    }
+}
+
+try {
+    consumer.subscribe(topics, new HandleRebalance()); 
+
+    while (true) {
+        ConsumerRecords<String, String> records =
+          consumer.poll(100);
+        for (ConsumerRecord<String, String> record : records)
+        {
+            System.out.println("topic = %s, partition = %s, offset = %d,
+             customer = %s, country = %s\n",
+             record.topic(), record.partition(), record.offset(),
+             record.key(), record.value());
+             currentOffsets.put(new TopicPartition(record.topic(),
+             record.partition()), new
+             OffsetAndMetadata(record.offset()+1, "no metadata"));
+        }
+        consumer.commitAsync(currentOffsets, null);
+    }
+} catch (WakeupException e) {
+    // 忽略异常，正在关闭消费者
+} catch (Exception e) {
+    log.error("Unexpected error", e);
+} finally {
+    try {
+        consumer.commitSync(currentOffsets);
+    } finally {
+        consumer.close();
+        System.out.println("Closed consumer and we are done");
+    }
+}
+```
+
+### 从特定偏移量处开始处理
+
+使用 `poll()` 方法可以从各个分区的最新偏移量处开始处理消息。
+
+不过，有时候，我们可能需要从特定偏移量处开始处理消息。
+
+- 从分区的起始位置开始读消息：`seekToBeginning(Collection<TopicPartition> partitions)` 方法
+- 从分区的末尾位置开始读消息：`seekToEnd(Collection<TopicPartition> partitions)` 方法
+- 查找偏移量：`seek()` 方法
+
+### 如何退出
+
+如果想让消费者从轮询消费消息的无限循环中退出，可以通过另一个线程调用 `consumer.wakeup()` 方法。 `consumer.wakeup()` 是消费者唯一一个可以从其他线程里安全调用的方法。调用 `consumer.wakeup()` 可以退出 `poll()` ，并抛出 `WakeupException` 异常，或者如果调用 `consumer.wakeup()` 时线程没有等待轮询，那么异常将在下一轮调用 `poll()` 时抛出。
+
+```java
+Runtime.getRuntime().addShutdownHook(new Thread() {
+    public void run() {
+        System.out.println("Starting exit...");
+        consumer.wakeup();
+        try {
+            mainThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+});
+
+...
+
+try {
+    // looping until ctrl-c, the shutdown hook will cleanup on exit
+    while (true) {
+        ConsumerRecords<String, String> records =
+            movingAvg.consumer.poll(1000);
+        System.out.println(System.currentTimeMillis() +
+            "--  waiting for data...");
+        for (ConsumerRecord<String, String> record : records) {
+            System.out.printf("offset = %d, key = %s, value = %s\n",
+                record.offset(), record.key(), record.value());
+        }
+        for (TopicPartition tp: consumer.assignment())
+            System.out.println("Committing offset at position:" +
+                consumer.position(tp));
+            movingAvg.consumer.commitSync();
+    }
+} catch (WakeupException e) {
+    // ignore for shutdown
+} finally {
+    consumer.close();
+    System.out.println("Closed consumer and we are done");
+}
+```
+
+### 反序列化器
+
+生产者需要用**序列化器**将 Java 对象转换成字节数组再发送给 Kafka；同理，消费者需要用**反序列化器**将从 Kafka 接收到的字节数组转换成 Java 对象。
+
+### 独立消费者
+
+通常，会有多个 Kafka 消费者组成群组，关注一个主题。
+
+但可能存在这样的场景：只需要一个消费者从一个主题的所有分区或某个特定的分区读取数据。这时，就不需要消费者群组和再均衡了，只需要把主题或分区分配给消费者，然后开始读取消息并提交偏移量。
+
+如果是这样，就不需要订阅主题，取而代之的是为自己分配分区。一个消费者可以订阅主题（并加入消费者群组），或为自己分配分区，但不能同时做这两件事。
+
+```java
+List<PartitionInfo> partitionInfos = null;
+partitionInfos = consumer.partitionsFor("topic");
+
+if (partitionInfos != null) {
+    for (PartitionInfo partition : partitionInfos)
+        partitions.add(new TopicPartition(partition.topic(),
+            partition.partition()));
+    consumer.assign(partitions);
+
+    while (true) {
+        ConsumerRecords<String, String> records = consumer.poll(1000);
+
+        for (ConsumerRecord<String, String> record: records) {
+            System.out.printf("topic = %s, partition = %s, offset = %d,
+                customer = %s, country = %s\n",
+                record.topic(), record.partition(), record.offset(),
+                record.key(), record.value());
+        }
+        consumer.commitSync();
+    }
+}
+```
 
 ## 参考资料
 
-- [Kafka 权威指南](https://item.jd.com/12270295.html)
+- [《Kafka 权威指南》](https://item.jd.com/12270295.html)

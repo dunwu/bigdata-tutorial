@@ -1,4 +1,4 @@
-package io.github.dunwu.javatech.kafka;
+package io.github.dunwu.bigdata.kafka;
 
 import java.util.Arrays;
 import java.util.Collections;

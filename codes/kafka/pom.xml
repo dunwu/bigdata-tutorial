@@ -18,7 +18,7 @@
   </properties>
 
   <modules>
-    <module>hbase-java-api-1.x</module>
-    <module>hbase-java-api-2.x</module>
+    <module>kafka-example</module>
+    <module>kafka-springboot-example</module>
   </modules>
 </project>
