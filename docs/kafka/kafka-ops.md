@@ -5,6 +5,27 @@
 > - JDK8
 > - ZooKeeper
 
+<!-- TOC depthFrom:2 depthTo:3 -->
+
+- [一、Kafka 单点部署](#一kafka-单点部署)
+  - [下载解压](#下载解压)
+  - [启动服务器](#启动服务器)
+  - [停止服务器](#停止服务器)
+- [二、Kafka 集群部署](#二kafka-集群部署)
+  - [修改配置](#修改配置)
+  - [启动](#启动)
+- [三、Kafka 命令](#三kafka-命令)
+  - [主题（Topic）](#主题topic)
+  - [生产者（Producers）](#生产者producers)
+  - [消费者（Consumers）](#消费者consumers)
+  - [配置（Config）](#配置config)
+  - [ACL](#acl)
+  - [ZooKeeper](#zookeeper)
+- [四、Kakfa 工具](#四kakfa-工具)
+- [参考资料](#参考资料)
+
+<!-- /TOC -->
+
 ## 一、Kafka 单点部署
 
 ### 下载解压
@@ -170,7 +191,7 @@ kafka-avro-console-producer --broker-list localhost:9092 --topic my.Topic --prop
 然后，可以选择输入部分 json key：
 
 ```json
-{"f1": "value1"}
+{ "f1": "value1" }
 ```
 
 #### 生成消息性能测试
@@ -281,7 +302,12 @@ zookeeper-shell localhost:2182 ls /
 ## 参考资料
 
 - **官方**
+  - [Kakfa 官网](http://kafka.apache.org/)
   - [Kakfa Github](https://github.com/apache/kafka)
   - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+- **书籍**
+  - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
+- **教程**
+  - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
 - **文章**
   - [kafka-cheat-sheet](https://github.com/lensesio/kafka-cheat-sheet)

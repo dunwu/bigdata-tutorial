@@ -10,7 +10,7 @@
 >
 > HBase 适用场景：实时地随机访问超大数据集。
 
-![](http://dunwu.test.upcdn.net/snap/20200601170449.png)
+![img](http://dunwu.test.upcdn.net/snap/20200601170449.png)
 
 ### Hadoop 的局限
 
@@ -94,7 +94,7 @@ HBase 中通过 `row key` 和 `column` 确定的为一个存储单元称为 `Cel
 - 该表具有两个列族，分别是 personal 和 office;
 - 其中列族 personal 拥有 name、city、phone 三个列，列族 office 拥有 tel、addres 两个列。
 
-![](http://dunwu.test.upcdn.net/snap/20200601172926.png)
+![img](http://dunwu.test.upcdn.net/snap/20200601172926.png)
 
 ### HBase 表特性
 
@@ -122,7 +122,7 @@ HBase 自动把表水平划分成区域（region）。每个区域由表中行�
 
 `Region` 是 HBase 中**分布式存储和负载均衡的最小单元**。这意味着不同的 `Region` 可以分布在不同的 `Region Server` 上。但一个 `Region` 是不会拆分到多个 Server 上的。
 
-![](http://dunwu.test.upcdn.net/snap/20200601181219.png)
+![img](http://dunwu.test.upcdn.net/snap/20200601181219.png)
 
 #### Region Server
 
@@ -137,7 +137,7 @@ HBase 自动把表水平划分成区域（region）。每个区域由表中行�
 
 Region Server 存取一个子表时，会创建一个 Region 对象，然后对表的每个列族创建一个 `Store` 实例，每个 `Store` 会有 0 个或多个 `StoreFile` 与之对应，每个 `StoreFile` 则对应一个 `HFile`，HFile 就是实际存储在 HDFS 上的文件。
 
-![](http://dunwu.test.upcdn.net/snap/20200612151239.png)
+![img](http://dunwu.test.upcdn.net/snap/20200612151239.png)
 
 ## 三、Hbase 系统架构
 
@@ -150,14 +150,14 @@ Region Server 存取一个子表时，会创建一个 Region 对象，然后对�
 
 HBase 依赖 ZooKeeper 来实现故障恢复。
 
-#### Master Server
+### Master Server
 
 区域分配、DDL(create、delete)操作由 HBase master 服务器处理。
 
 master 服务器负责协调 region 服务器：
 
-- - 协助区域启动，出现故障恢复或负载均衡情况时，重新分配 region 服务器
-  - 监控集群中的所有 region 服务器
+- 协助区域启动，出现故障恢复或负载均衡情况时，重新分配 region 服务器
+- 监控集群中的所有 region 服务器
 - 处理 DDL 请求（创建、删除、更新表）
 
 ![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551166513572.png)
@@ -167,7 +167,7 @@ master 服务器负责协调 region 服务器：
 - Region Server 负责维护 Master 分配给它的 Region ，并处理发送到 Region 上的 IO 请求；
 - Region Server 负责切分在运行过程中变得过大的 Region，并通知 Master 记录更新。
 
-![](http://dunwu.test.upcdn.net/snap/20200612151602.png)
+![img](http://dunwu.test.upcdn.net/snap/20200612151602.png)
 
 #### ZooKeeper
 
@@ -207,7 +207,7 @@ ZooKeeper 的作用：
 
 注：`META` 表是 HBase 中一张特殊的表，它保存了所有 Region 的位置信息，META 表自己的位置信息则存储在 ZooKeeper 上。
 
-![](http://dunwu.test.upcdn.net/snap/20200601182655.png)
+![img](http://dunwu.test.upcdn.net/snap/20200601182655.png)
 
 > 更为详细读取数据流程参考：
 >

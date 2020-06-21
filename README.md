@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://dunwu.github.io/bigdata-tutorial/" target="_blank" rel="noopener noreferrer">
-        <img src="http://dunwu.test.upcdn.net/common/logo/java-logo.png" alt="logo" width="100px">
+        <img src="http://dunwu.test.upcdn.net/common/logo/dunwu-logo.png" alt="logo" width="100px">
     </a>
 </p>
 
@@ -54,8 +54,14 @@
 
 ### Kafka
 
+> **[Kafka](docs/kafka) 是一个分布式流处理平台，此外，它也被广泛应用于消息队列**。
+
 - [Kafka 应用指南基础篇](docs/kafka/kafka-basic.md)
 - [Kafka 应用指南进阶篇](docs/kafka/kafka-advance.md)
+- [Kafka 生产者](docs/kafka/kafka-producer.md)
+- [Kafka 消费者](docs/kafka/kafka-consumer.md)
+- [Kafka 集群](docs/kafka/kafka-cluster.md)
+- [Kafka 可靠的数据传递](docs/kafka/kafka-reliable-transmission.md)
 - [Kafka 运维指南](docs/kafka/kafka-ops.md)
 
 ### 其他

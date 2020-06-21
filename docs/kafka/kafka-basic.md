@@ -2,6 +2,30 @@
 
 > **Kafka 用于构建实时数据管道和流应用。它具有水平可伸缩性，容错性，快速快速性**。
 
+<!-- TOC depthFrom:2 depthTo:3 -->
+
+- [简介](#简介)
+  - [什么是 Kafka](#什么是-kafka)
+  - [Kafka 核心功能](#kafka-核心功能)
+  - [Kafka 适用场景](#kafka-适用场景)
+  - [Kafka 的特性](#kafka-的特性)
+  - [核心 API](#核心-api)
+  - [核心概念](#核心概念)
+- [基本工作流程](#基本工作流程)
+- [持久化](#持久化)
+- [复制](#复制)
+  - [Leader 和 Follower](#leader-和-follower)
+  - [选举 Leader](#选举-leader)
+- [Client API](#client-api)
+  - [引入依赖](#引入依赖)
+  - [发送消息](#发送消息)
+  - [消费消息流程](#消费消息流程)
+- [运维](#运维)
+- [参考资料](#参考资料)
+- [🚪 传送](#🚪-传送)
+
+<!-- /TOC -->
+
 ## 简介
 
 ### 什么是 Kafka
@@ -411,10 +435,12 @@ public void consumeMessageForIndependentConsumer(String topic){
 
 ## 参考资料
 
-- **官方资料**
-  - [Github](https://github.com/apache/kafka)
-  - [官网](http://kafka.apache.org/)
-  - [官方文档](https://kafka.apache.org/documentation/)
+- **官方**
+  - [Kakfa 官网](http://kafka.apache.org/)
+  - [Kakfa Github](https://github.com/apache/kafka)
+  - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+- **书籍**
+  - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**
   - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
 - **文章**
@@ -424,6 +450,6 @@ public void consumeMessageForIndependentConsumer(String topic){
   - [Kafak(04) Kafka 生产者事务和幂等](http://www.heartthinkdo.com/?p=2040#43)
   - <https://cwiki.apache.org/confluence/display/KAFKA/Kafka+data+structures+in+Zookeeper>
 
-## 扩展阅读
+## 🚪 传送
 
-- [分布式基本原理](../../theory/mq-theory.md)
+◾ 🏠 [BIGDATA-TUTORIAL 首页](https://github.com/dunwu/bigdata-tutorial) ◾ 🎯 [我的博客](https://github.com/dunwu/blog) ◾

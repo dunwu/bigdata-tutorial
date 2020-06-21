@@ -2,6 +2,33 @@
 
 > Kafka 是一个分布式的、可水平扩展的、基于发布/订阅模式的、支持容错的消息系统。
 
+<!-- TOC depthFrom:2 depthTo:3 -->
+
+- [生产者详细流程](#生产者详细流程)
+- [消费者详细流程](#消费者详细流程)
+  - [消费者和消费者群组](#消费者和消费者群组)
+  - [提交偏移量](#提交偏移量)
+  - [从指定偏移量获取数据](#从指定偏移量获取数据)
+- [幂等性](#幂等性)
+  - [PID 和 Sequence Number](#pid-和-sequence-number)
+  - [生成 PID 的流程](#生成-pid-的流程)
+  - [幂等性的应用实例](#幂等性的应用实例)
+- [事务](#事务)
+  - [事务属性](#事务属性)
+  - [引入事务目的](#引入事务目的)
+  - [事务操作的 API](#事务操作的-api)
+  - [事务属性的应用实例](#事务属性的应用实例)
+  - [生产者事务的实现](#生产者事务的实现)
+- [流处理](#流处理)
+  - [无状态处理](#无状态处理)
+  - [有状态处理](#有状态处理)
+- [Zookeeper](#zookeeper)
+  - [节点信息](#节点信息)
+  - [zookeeper 一些总结](#zookeeper-一些总结)
+- [参考资料](#参考资料)
+
+<!-- /TOC -->
+
 ## 生产者详细流程
 
 Kafka 生产者发送消息流程如下图，需要注意的有：
@@ -754,7 +781,7 @@ public void onlyConsumeInTransaction() {
 
 ![img](http://www.heartthinkdo.com/wp-content/uploads/2018/05/3-1.png)
 
-同一份代码运行两个实例，分步执行如下：_在实例 1 没有进行提交事务前，开始执行实例 2 的初始化事务_
+同一份代码运行两个实例，分步执行如下：在实例 1 没有进行提交事务前，开始执行实例 2 的初始化事务
 
 ![img](http://www.heartthinkdo.com/wp-content/uploads/2018/05/4-1-1024x458.png)
 
@@ -783,7 +810,7 @@ org.apache.kafka.common.errors.ProducerFencedException: Producer attempted an op
 
 #### 事务最佳实践-单实例的事务性
 
-通过上面实例中可以看到 kafka 是跨 Session 的数据幂等发送，即如果应用部署多个实例时常会遇到上面的问题“_org.apache.kafka.common.errors.ProducerFencedException: Producer attempted an operation with an old epoch. Either there is a newer producer with the same transactionalId, or the producer’s transaction has been expired by the broker_.”，必须保证这些实例生产者的提交事务顺序和创建顺序保持一致才可以，否则就无法成功。其实，在实践中，我们更多的是**如何实现对应用单实例的事务性**。可以通过 spring-kafaka 实现思路来学习，即**每次创建生产者都设置一个不同的 transactionId 的值**，如下代码：
+通过上面实例中可以看到 kafka 是跨 Session 的数据幂等发送，即如果应用部署多个实例时常会遇到上面的问题“org.apache.kafka.common.errors.ProducerFencedException: Producer attempted an operation with an old epoch. Either there is a newer producer with the same transactionalId, or the producer’s transaction has been expired by the broker.”，必须保证这些实例生产者的提交事务顺序和创建顺序保持一致才可以，否则就无法成功。其实，在实践中，我们更多的是**如何实现对应用单实例的事务性**。可以通过 spring-kafaka 实现思路来学习，即**每次创建生产者都设置一个不同的 transactionId 的值**，如下代码：
 
 在 spring-kafka 中，对于一个线程创建一个 producer，事务提交之后，还会关闭这个 producer 并清除，后续同一个线程或者新的线程重新执行事务时，此时就会重新创建 producer。
 
@@ -1509,10 +1536,14 @@ Topic Configuration
 
 ## 参考资料
 
-- **官方资料**
-  - [Github](https://github.com/apache/kafka)
-  - [官网](http://kafka.apache.org/)
-  - [官方文档](https://kafka.apache.org/documentation/)
+- **官方**
+  - [Kakfa 官网](http://kafka.apache.org/)
+  - [Kakfa Github](https://github.com/apache/kafka)
+  - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+- **书籍**
+  - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
+- **教程**
+  - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
 - **文章**
   - [Kafka(03) Kafka 介绍](http://www.heartthinkdo.com/?p=2006#233)
   - [Kafka 剖析（一）：Kafka 背景及架构介绍](http://www.infoq.com/cn/articles/kafka-analysis-part-1)
