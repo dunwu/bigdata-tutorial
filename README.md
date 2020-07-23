@@ -71,9 +71,9 @@
 
 ## 📚 资料
 
-- [《Hadoop 权威指南：大数据的存储与分析》](https://item.jd.com/12109713.html)
-- [《Kafka 权威指南》](https://book.douban.com/subject/27665114/)
-- [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://book.douban.com/subject/26292004/)
+- [《Hadoop 权威指南（第四版）》](https://item.jd.com/12109713.html)
+- [《Kafka 权威指南》](https://item.jd.com/12270295.html)
+- [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://item.jd.com/11622772.html)
 - [《Spark 技术内幕 深入解析 Spark 内核架构设计与实现原理》](https://book.douban.com/subject/26649141/)
 - [《Spark.The.Definitive.Guide》](https://book.douban.com/subject/27035127/)
 - [《HBase 权威指南》](https://book.douban.com/subject/10748460/)

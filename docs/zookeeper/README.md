@@ -16,8 +16,8 @@
   - [ZooKeeper Github](https://github.com/apache/zookeeper)
   - [Apache Curator 官网](http://curator.apache.org/)
 - **书籍**
-  - [Hadoop 权威指南（第四版）](https://item.jd.com/12109713.html)
-  - [从 Paxos 到 Zookeeper](https://item.jd.com/11622772.html)
+  - [《Hadoop 权威指南（第四版）》](https://item.jd.com/12109713.html)
+  - [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://item.jd.com/11622772.html)
 - **文章**
   - [分布式服务框架 ZooKeeper -- 管理分布式环境中的数据](https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/index.html)
   - [ZooKeeper 的功能以及工作原理](https://www.cnblogs.com/felixzh/p/5869212.html)

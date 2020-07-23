@@ -73,7 +73,7 @@ broker 会在它所监听的每一个端口上运行一个 Acceptor 线程，这
 
 当请求放进请求队列后，IO 线程负责进行处理。
 
-![](http://dunwu.test.upcdn.net/snap/20200621122854.png)
+![img](http://dunwu.test.upcdn.net/snap/20200621122854.png)
 
 生产请求和拉取请求都需要发送给分区的 Leader 副本处理。
 
@@ -83,7 +83,7 @@ broker 会在它所监听的每一个端口上运行一个 Acceptor 线程，这
 
 客户端会把这些信息缓存起来，并直接往目标 broker 上发送生产请求和获取请求。它们需要时不时地通过发送元数据请求来刷新这些信息（刷新的时间间隔通过 `metadata.max.age.ms` 来配置），从而知道元数据是否发生了变化。
 
-![](http://dunwu.test.upcdn.net/snap/20200621123848.png)
+![img](http://dunwu.test.upcdn.net/snap/20200621123848.png)
 
 ### 生产请求
 
@@ -113,7 +113,7 @@ acks 参数控制多少个副本确认写入成功后生产者才认为消息生
 
 Kafka 使用零复制（zero-copy）来提高性能。也就是说，Kafka 将文件（更准确的说，是文件系统缓存）的消息直接传给网络通道，并没有使用中间的 buffer。这避免了内存的字节拷贝和 buffer 维护，极大地提高了性能。
 
-![](http://dunwu.test.upcdn.net/snap/20200621124516.png)
+![img](http://dunwu.test.upcdn.net/snap/20200621124516.png)
 
 不是所有主副本的数据都能够被读取。**当数据被所有同步副本写入成功后，它才能被客户端读取**。主副本知道每个消息会被复制到哪个副本上，在消息还没有被写入到所有同步副本之前，是不会发送给消费者的。
 
@@ -121,7 +121,7 @@ Kafka 使用零复制（zero-copy）来提高性能。也就是说，Kafka 将�
 
 这也意味着，如果 broker 间的消息复制因为某些原因变慢了，那么消息到达消费者的时间也会随之边长。延迟时间可以通过 replica.lag.time.max.ms 来配置，它指定了副本在复制消息时可被允许的最大延迟时间。
 
-![](http://dunwu.test.upcdn.net/snap/20200621124533.png)
+![img](http://dunwu.test.upcdn.net/snap/20200621124533.png)
 
 ### 其他请求
 
@@ -176,7 +176,7 @@ Kafka 允许消费者从任意有效的偏移量位置开始读取消息。Kafka
 - 干净的部分：这部分消息之前已经被清理过，每个键只存在一个值。
 - 污浊的部分：在上一次清理后写入的新消息。
 
-![](http://dunwu.test.upcdn.net/snap/20200621135557.png)
+![img](http://dunwu.test.upcdn.net/snap/20200621135557.png)
 
 如果在 Kafka 启动时启用了清理功能（通过 log.cleaner.enabled 配置），每个 broker 会启动一个清理管理器线程和若干个清理线程，每个线程负责一个分区。
 
@@ -188,7 +188,7 @@ Kafka 允许消费者从任意有效的偏移量位置开始读取消息。Kafka
 
 对于一个段，清理前后的效果如下：
 
-![](http://dunwu.test.upcdn.net/snap/20200621140117.png)
+![img](http://dunwu.test.upcdn.net/snap/20200621140117.png)
 
 ### 删除事件
 

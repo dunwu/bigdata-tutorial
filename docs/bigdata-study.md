@@ -100,8 +100,8 @@
 大数据最权威和最全面的学习资料就是官方文档。热门的大数据框架社区都比较活跃、版本更新迭代也比较快，所以其出版物都明显滞后于其实际版本，基于这个原因采用书本学习不是一个最好的方案。比较庆幸的是，大数据框架的官方文档都写的比较好，内容完善，重点突出，同时都采用了大量配图进行辅助讲解。当然也有一些优秀的书籍历经时间的检验，至今依然很经典，这里列出部分个人阅读过的经典书籍：
 
 - [《hadoop 权威指南 (第四版)》](https://book.douban.com/subject/27115351/) 2017 年
-- [《Kafka 权威指南》](https://book.douban.com/subject/27665114/) 2017 年
-- [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://book.douban.com/subject/26292004/) 2015 年
+- [《Kafka 权威指南》](https://item.jd.com/12270295.html) 2017 年
+- [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://item.jd.com/11622772.html) 2015 年
 - [《Spark 技术内幕 深入解析 Spark 内核架构设计与实现原理》](https://book.douban.com/subject/26649141/) 2015 年
 - [《Spark.The.Definitive.Guide》](https://book.douban.com/subject/27035127/) 2018 年
 - [《HBase 权威指南》](https://book.douban.com/subject/10748460/) 2012 年

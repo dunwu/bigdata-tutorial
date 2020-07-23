@@ -2,9 +2,10 @@
 
 ## 📖 内容
 
-- [ZooKeeper 应用指南](zookeeper-quickstart.md)
-- [ZooKeeper Java API](zookeeper-api.md)
-- [ZooKeeper 运维](zookeeper-ops.md)
+- [HBase 应用指南](hbase-quickstart.md)
+- [HBase 命令](hbase-cli.md)
+- [HBase Java API](hbase-api.md)
+- [HBase 配置](hbase-ops.md)
 
 ## 📚 资料
 
@@ -13,8 +14,10 @@
   - [HBase 官方文档](https://hbase.apache.org/book.html)
   - [HBase 官方文档中文版](http://abloz.com/hbase/book.html)
   - [HBase API](https://hbase.apache.org/apidocs/index.html)
+- **教程**
+  - [BigData-Notes](https://github.com/heibaiying/BigData-Notes)
 - **书籍**
-  - [Hadoop 权威指南（第四版）](https://item.jd.com/12109713.html)
+  - [《Hadoop 权威指南（第四版）》](https://item.jd.com/12109713.html)
 - **文章**
   - [Bigtable: A Distributed Storage System for Structured Data](https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf)
 
