@@ -6,14 +6,16 @@
   - [消费者](#消费者)
   - [消费者群组](#消费者群组)
   - [分区再均衡](#分区再均衡)
+  - [轮询获取消息](#轮询获取消息)
 - [二、消费者 API](#二消费者-api)
   - [创建消费者](#创建消费者)
   - [订阅主题](#订阅主题)
   - [轮询](#轮询)
 - [三、提交偏移量](#三提交偏移量)
+  - [提交偏移量的旧方案](#提交偏移量的旧方案)
+  - [提交偏移量的新方案](#提交偏移量的新方案)
   - [自动提交](#自动提交)
   - [手动提交](#手动提交)
-- [四、再均衡监听器](#四再均衡监听器)
 - [五、如何退出](#五如何退出)
 - [六、反序列化器](#六反序列化器)
 - [七、独立消费者](#七独立消费者)
@@ -26,15 +28,15 @@
 
 ### 消费者
 
-Kafka 消费者以**pull 方式**从 broker 拉取消息，消费者可以订阅一个或多个主题，然后按照消息生成顺序（**kafka 只能保证分区中消息的顺序**）读取消息。
+Kafka 消费者以 **pull 方式**从 broker 拉取消息，消费者可以订阅一个或多个主题，然后按照消息生成顺序（**kafka 只能保证分区中消息的顺序**）读取消息。
 
-**一个消息消息只有在所有跟随者节点都进行了同步，才会被消费者获取到**。如下图，只能消费 Message0、Message1、Message2：
+**一个消息只有在所有跟随者节点都进行了同步，才会被消费者获取到**。如下图，只能消费 Message0、Message1、Message2：
 
 ![img](http://dunwu.test.upcdn.net/snap/20200621113917.png)
 
 ### 消费者群组
 
-Kafka 消费者从属于消费者群组，**一个群组里的消费者订阅的是同一个主题（Topic），一个主题有多个分区（Partition），每一个分区（Partition）只能隶属于消费者群组中的一个消费者**。
+Kafka 消费者从属于消费者群组，**一个群组里的 Consumer 订阅同一个 Topic，一个主题有多个 Partition，每一个 Partition 只能隶属于消费者群组中的一个 Consumer**。
 
 - 同一时刻，**一条消息只能被同一消费者组中的一个消费者实例消费**。
 - **消费者群组之间互不影响**。
@@ -43,33 +45,7 @@ Kafka 消费者从属于消费者群组，**一个群组里的消费者订阅的
 
 ### 分区再均衡
 
-**分区的所有权从一个消费者转移到另一个消费者，这样的行为被称为再均衡。它实现了消费者群组的高可用性和伸缩性**。
-
-消费者通过向被指派为群组协调器的 broker 发送心跳来维持它们和群组的从属关系以及它们对分区的所有关系。
-
-当在群组里面 新增/移除消费者 或者 新增/移除 kafka 集群 broker 节点 时，群组协调器 Broker 会触发再均衡，重新为每一个 Partition 分配消费者。**再均衡期间，消费者无法读取消息，造成整个消费者群组一小段时间的不可用。**
-
-- 新增消费者。customer 订阅主题之后，第一次执行 poll 方法
-- 移除消费者。执行 customer.close()操作或者消费客户端宕机，就不再通过 poll 向群组协调器发送心跳了，当群组协调器检测次消费者没有心跳，就会触发再均衡。
-- 新增 broker。如重启 broker 节点
-- 移除 broker。如 kill 掉 broker 节点。
-
-**再均衡是是通过消费者群组中的称为“群主”消费者客户端进行的**。什么是群主呢？“群主”就是第一个加入群组的消费者。消费者第一次加入群组时，它会向群组协调器发送一个 JoinGroup 的请求，如果是第一个，则此消费者被指定为“群主”（群主是不是和 qq 群很想啊，就是那个第一个进群的人）。
-
-群主分配分区的过程如下：
-
-1. 群主从群组协调器获取群组成员列表，然后给每一个消费者进行分配分区 Partition。
-2. 两个分配策略：Range 和 RoundRobin。
-   - Range 策略，就是把若干个连续的分区分配给消费者，如存在分区 1-5，假设有 3 个消费者，则消费者 1 负责分区 1-2,消费者 2 负责分区 3-4，消费者 3 负责分区 5。
-   - RoundRoin 策略，就是把所有分区逐个分给消费者，如存在分区 1-5，假设有 3 个消费者，则分区 1->消费 1，分区 2->消费者 2，分区 3>消费者 3，分区 4>消费者 1，分区 5->消费者 2。
-3. 群主分配完成之后，把分配情况发送给群组协调器。
-4. 群组协调器再把这些信息发送给消费者。**每一个消费者只能看到自己的分配信息，只有群主知道所有消费者的分配信息**。
-
-<div align="center">
-<img src="http://upload-images.jianshu.io/upload_images/3101171-fd4ab296c5dbeb24.png" />
-</div>
-
-#### 轮询获取消息
+### 轮询获取消息
 
 Kafka 消费者通过 `poll` 来获取消息，但是获取消息时并不是立刻返回结果，需要考虑两个因素：
 
@@ -79,7 +55,6 @@ Kafka 消费者通过 `poll` 来获取消息，但是获取消息时并不是立
 <div align="center">
 <img src="http://upload-images.jianshu.io/upload_images/3101171-d7d111e7c7e7f504.png" />
 </div>
-
 
 poll 处了获取消息外，还有其他作用：
 
@@ -137,7 +112,25 @@ try {
 
 **更新分区当前位置的操作叫作提交**。
 
-消费者会向一个叫作 `_consumer_offset` 的特殊主题发送消息，消息里包含每个分区的偏移量。如果消费者一直处于运行状态，那么偏移量就没有什么用处。不过，如果消费者发生崩溃或有新的消费者加入群组，就会**触发再均衡**，完成再均衡后，每个消费者可能分配到新的分区，而不是之前处理的那个。为了能够继续之前的工作，消费者需要读取每个分区最后一次提交的偏移量，然后从偏移量指定的地方继续处理。
+### 提交偏移量的旧方案
+
+老版本的 Consumer Group 把位移保存在 ZooKeeper 中。ZooKeeper 是一个分布式的协调服务框架，Kafka 重度依赖它实现各种各样的协调管理。将位移保存在 ZooKeeper 外部系统的做法，最显而易见的好处就是减少了 Kafka Broker 端的状态保存开销。
+
+ZooKeeper 这类元框架其实并不适合进行频繁的写更新，而 Consumer Group 的位移更新却是一个非常频繁的操作。这种大吞吐量的写操作会极大地拖慢 ZooKeeper 集群的性能，因此 Kafka 社区渐渐有了这样的共识：将 Consumer 位移保存在 ZooKeeper 中是不合适的做法。
+
+### 提交偏移量的新方案
+
+新版本 Consumer 的位移管理机制其实也很简单，就是**将 Consumer 的位移数据作为一条条普通的 Kafka 消息，提交到 **consumer_offsets 中。可以这么说，**consumer_offsets 的主要作用是保存 Kafka 消费者的位移信息。**
+
+**位移主题的 Key 中应该保存 3 部分内容：`<Group ID，主题名，分区号 >`**。
+
+通常来说，**当 Kafka 集群中的第一个 Consumer 程序启动时，Kafka 会自动创建位移主题**。我们说过，位移主题就是普通的 Kafka 主题，那么它自然也有对应的分区数。但如果是 Kafka 自动创建的，分区数是怎么设置的呢？这就要看 Broker 端参数 `offsets.topic.num.partitions` 的取值了。它的默认值是 50，因此 Kafka 会自动创建一个 50 分区的位移主题。如果你曾经惊讶于 Kafka 日志路径下冒出很多 `__consumer_offsets-xxx` 这样的目录，那么现在应该明白了吧，这就是 Kafka 自动帮你创建的位移主题啊。
+
+你可能会问，除了分区数，副本数或备份因子是怎么控制的呢？答案也很简单，这就是 Broker 端另一个参数 offsets.topic.replication.factor 要做的事情了。它的默认值是 3。
+
+总结一下，**如果位移主题是 Kafka 自动创建的，那么该主题的分区数是 50，副本数是 3**。
+
+如果消费者一直处于运行状态，那么偏移量就没有什么用处。不过，如果消费者发生崩溃或有新的消费者加入群组，就会**触发再均衡**，完成再均衡后，每个消费者可能分配到新的分区，而不是之前处理的那个。为了能够继续之前的工作，消费者需要读取每个分区最后一次提交的偏移量，然后从偏移量指定的地方继续处理。
 
 （1）**如果提交的偏移量小于客户端处理的最后一个消息的偏移量，那么处于两个偏移量之间的消息就会被重复处理**。
 
@@ -319,68 +312,9 @@ while (true) {
     }
 ```
 
-## 四、再均衡监听器
-
-如果 Kafka 触发了再均衡，我们需要在消费者失去对一个分区的所有权之前提交最后一个已处理记录的偏移量。如果消费者准备了一个缓冲区用于处理偶发的事件，那么在失去分区所有权之前，需要处理在缓冲区累积下来的记录。可能还需要关闭文件句柄、数据库连接等。
-
-在为消费者分配新分区或移除旧分区时，可以通过消费者 API 执行一些应用程序代码，在调用 `subscribe()` 方法时传进去一个 `ConsumerRebalanceListener` 实例就可以了。 `ConsumerRebalanceListener` 有两个需要实现的方法。
-
-- `public void onPartitionsRevoked(Collection partitions)` 方法会在再均衡开始之前和消费者停止读取消息之后被调用。如果在这里提交偏移量，下一个接管分区的消费者就知道该从哪里开始读取了。
-- `public void onPartitionsAssigned(Collection partitions)` 方法会在重新分配分区之后和消费者开始读取消息之前被调用。
-
-```java
-private Map<TopicPartition, OffsetAndMetadata> currentOffsets=
-  new HashMap<>();
-
-private class HandleRebalance implements ConsumerRebalanceListener {
-    public void onPartitionsAssigned(Collection<TopicPartition>
-      partitions) {
-    }
-
-    public void onPartitionsRevoked(Collection<TopicPartition>
-      partitions) {
-        System.out.println("Lost partitions in rebalance.
-          Committing current
-        offsets:" + currentOffsets);
-        consumer.commitSync(currentOffsets);
-    }
-}
-
-try {
-    consumer.subscribe(topics, new HandleRebalance());
-
-    while (true) {
-        ConsumerRecords<String, String> records =
-          consumer.poll(100);
-        for (ConsumerRecord<String, String> record : records)
-        {
-            System.out.println("topic = %s, partition = %s, offset = %d,
-             customer = %s, country = %s\n",
-             record.topic(), record.partition(), record.offset(),
-             record.key(), record.value());
-             currentOffsets.put(new TopicPartition(record.topic(),
-             record.partition()), new
-             OffsetAndMetadata(record.offset()+1, "no metadata"));
-        }
-        consumer.commitAsync(currentOffsets, null);
-    }
-} catch (WakeupException e) {
-    // 忽略异常，正在关闭消费者
-} catch (Exception e) {
-    log.error("Unexpected error", e);
-} finally {
-    try {
-        consumer.commitSync(currentOffsets);
-    } finally {
-        consumer.close();
-        System.out.println("Closed consumer and we are done");
-    }
-}
-```
-
 ## 五、如何退出
 
-如果想让消费者从轮询消费消息的无限循环中退出，可以通过另一个线程调用 `consumer.wakeup()` 方法。 `consumer.wakeup()` 是消费者唯一一个可以从其他线程里安全调用的方法。调用 `consumer.wakeup()` 可以退出 `poll()` ，并抛出 `WakeupException` 异常，或者如果调用 `consumer.wakeup()` 时线程没有等待轮询，那么异常将在下一轮调用 `poll()` 时抛出。
+**如果想让消费者从轮询消费消息的无限循环中退出，可以通过另一个线程调用 `consumer.wakeup()` 方法**。 **`consumer.wakeup()` 是消费者唯一一个可以从其他线程里安全调用的方法**。调用 `consumer.wakeup()` 可以退出 `poll()` ，并抛出 `WakeupException` 异常，或者如果调用 `consumer.wakeup()` 时线程没有等待轮询，那么异常将在下一轮调用 `poll()` 时抛出。
 
 ```java
 Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -429,7 +363,7 @@ try {
 
 通常，会有多个 Kafka 消费者组成群组，关注一个主题。
 
-但可能存在这样的场景：只需要一个消费者从一个主题的所有分区或某个特定的分区读取数据。这时，就不需要消费者群组和再均衡了，只需要把主题或分区分配给消费者，然后开始读取消息并提交偏移量。
+但可能存在这样的场景：只需要一个消费者从一个主题的所有分区或某个特定的分区读取数据。这时，就不需要消费者群组和再均衡了，只需要**把主题或分区分配给消费者**，然后开始读取消息并提交偏移量。
 
 如果是这样，就不需要订阅主题，取而代之的是为自己分配分区。一个消费者可以订阅主题（并加入消费者群组），或为自己分配分区，但不能同时做这两件事。
 
@@ -485,5 +419,6 @@ if (partitionInfos != null) {
   - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
-- **文章**
-  - [Kafka(03) Kafka 介绍](http://www.heartthinkdo.com/?p=2006#233)
+- **教程**
+  - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
+  - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)

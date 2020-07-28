@@ -54,12 +54,13 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 
 > **[Kafka](kafka) 是一个分布式流处理平台，此外，它也被广泛应用于消息队列**。
 
-- [Kafka 应用指南基础篇](kafka/kafka-basic.md)
-- [Kafka 应用指南进阶篇](kafka/kafka-advance.md)
+- [Kafka 应用指南](kafka/kafka-quickstart.md)
 - [Kafka 生产者](kafka/kafka-producer.md)
 - [Kafka 消费者](kafka/kafka-consumer.md)
-- [Kafka 集群](kafka/kafka-cluster.md)
 - [Kafka 可靠的数据传递](kafka/kafka-reliable-transmission.md)
+- [Kafka 分区再均衡](kafka/kafka-rebalance.md)
+- [Kafka 集群](kafka/kafka-cluster.md)
+- [Kafka 流式处理](kafka/kafka-stream.md)
 - [Kafka 运维指南](kafka/kafka-ops.md)
 
 ### 其他

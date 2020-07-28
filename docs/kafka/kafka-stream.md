@@ -153,5 +153,6 @@ Kafka的消息传递层对数据进行分区以进行存储和传输。 Kafka St
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**
   - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
+  - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
 - **文章**
   - [Kafka 设计解析（七）：流式计算的新贵 Kafka Stream](https://www.infoq.cn/article/kafka-analysis-part-7)
