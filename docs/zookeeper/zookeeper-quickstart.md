@@ -28,13 +28,10 @@ ZooKeeper 具有以下特性：
 
 ### ZooKeeper 的设计目标
 
-简单的数据模型
-
-可以构建集群
-
-顺序访问
-
-高性能
+- 简单的数据模型
+- 可以构建集群
+- 顺序访问
+- 高性能
 
 ## 二、ZooKeeper 核心概念
 
@@ -44,9 +41,8 @@ ZooKeeper 具有以下特性：
 
 树中的节点被称为 **`znode`**，其中根节点为 `/`，每个节点上都会保存自己的数据和节点信息。znode 可以用于存储数据，并且有一个与之相关联的 ACL（详情可见 [ACL](#ACL)）。ZooKeeper 的设计目标是实现协调服务，而不是真的作为一个文件存储，因此 znode 存储数据的**大小被限制在 1MB 以内**。
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_1.png" width="400px" />
-</div>
+![img](http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_1.png)
+
 **ZooKeeper 的数据访问具有原子性**。其读写操作都是要么全部成功，要么全部失败。
 
 znode 通过路径被引用。**znode 节点路径必须是绝对路径**。
@@ -112,9 +108,7 @@ ZooKeeper 定义了如下五种权限：
 
 由于处理读请求不需要服务器之间的交互，**Follower/Observer 越多，整体系统的读请求吞吐量越大**，也即读性能越好。
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_3.png" />
-</div>
+![img](http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_3.png)
 
 ### 写操作
 
@@ -122,9 +116,7 @@ ZooKeeper 定义了如下五种权限：
 
 #### 写 Leader
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_4.png" width="600" />
-</div>
+![img](http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_4.png)
 
 由上图可见，通过 Leader 进行写操作，主要分为五步：
 
@@ -142,9 +134,7 @@ ZooKeeper 定义了如下五种权限：
 
 #### 写 Follower/Observer
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_5.png" />
-</div>
+![img](http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_5.png)
 
 - Follower/Observer 均可接受写请求，但不能直接处理，而需要将写请求转发给 Leader 处理。
 - 除了多了一步请求转发，其它流程与直接写 Leader 无任何区别。
@@ -229,12 +219,11 @@ Zookeeper 的会话管理主要是通过 `SessionTracker` 来负责，其采用�
 
 ## 四、ZAB 协议
 
-> ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议。***ZAB 协议不是 Paxos 算法***，只是比较类似，二者在操作上并不相同。
+> ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议。**_ZAB 协议不是 Paxos 算法_**，只是比较类似，二者在操作上并不相同。
 >
 > ZAB 协议是 Zookeeper 专门设计的一种**支持崩溃恢复的原子广播协议**。
 >
 > ZAB 协议是 ZooKeeper 的数据一致性和高可用解决方案。
->
 
 ZAB 协议定义了两个可以**无限循环**的流程：
 
@@ -259,21 +248,21 @@ ZAB 协议定义了两个可以**无限循环**的流程：
 
 #### 服务器状态
 
-- ***LOOKING*** - 不确定 Leader 状态。该状态下的服务器认为当前集群中没有 Leader，会发起 Leader 选举
-- ***FOLLOWING*** - 跟随者状态。表明当前服务器角色是 Follower，并且它知道 Leader 是谁
-- ***LEADING*** - 领导者状态。表明当前服务器角色是 Leader，它会维护与 Follower 间的心跳
-- ***OBSERVING*** - 观察者状态。表明当前服务器角色是 Observer，与 Folower 唯一的不同在于不参与选举，也不参与集群写操作时的投票
+- **_LOOKING_** - 不确定 Leader 状态。该状态下的服务器认为当前集群中没有 Leader，会发起 Leader 选举
+- **_FOLLOWING_** - 跟随者状态。表明当前服务器角色是 Follower，并且它知道 Leader 是谁
+- **_LEADING_** - 领导者状态。表明当前服务器角色是 Leader，它会维护与 Follower 间的心跳
+- **_OBSERVING_** - 观察者状态。表明当前服务器角色是 Observer，与 Folower 唯一的不同在于不参与选举，也不参与集群写操作时的投票
 
 #### 选票数据结构
 
 每个服务器在进行领导选举时，会发送如下关键信息
 
-- ***logicClock*** - 每个服务器会维护一个自增的整数，名为 logicClock，它表示这是该服务器发起的第多少轮投票
-- ***state*** - 当前服务器的状态
-- ***self_id*** - 当前服务器的 myid
-- ***self_zxid*** - 当前服务器上所保存的数据的最大 zxid
-- ***vote_id*** - 被推举的服务器的 myid
-- ***vote_zxid*** - 被推举的服务器上所保存的数据的最大 zxid
+- **_logicClock_** - 每个服务器会维护一个自增的整数，名为 logicClock，它表示这是该服务器发起的第多少轮投票
+- **_state_** - 当前服务器的状态
+- **_self_id_** - 当前服务器的 myid
+- **_self_zxid_** - 当前服务器上所保存的数据的最大 zxid
+- **_vote_id_** - 被推举的服务器的 myid
+- **_vote_zxid_** - 被推举的服务器上所保存的数据的最大 zxid
 
 #### 投票流程
 
@@ -311,13 +300,11 @@ ZAB 协议定义了两个可以**无限循环**的流程：
 
 那么，ZooKeeper 是如何实现副本机制的呢？答案是：ZAB 协议的原子广播。
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_3.png" width="650px" />
-</div>
+![img](http://dunwu.test.upcdn.net/cs/distributed/zookeeper/zookeeper_3.png)
 
 ZAB 协议的原子广播要求：
 
-***所有的写请求都会被转发给 Leader，Leader 会以原子广播的方式通知 Follow。当半数以上的 Follow 已经更新状态持久化后，Leader 才会提交这个更新，然后客户端才会收到一个更新成功的响应***。这有些类似数据库中的两阶段提交协议。
+**_所有的写请求都会被转发给 Leader，Leader 会以原子广播的方式通知 Follow。当半数以上的 Follow 已经更新状态持久化后，Leader 才会提交这个更新，然后客户端才会收到一个更新成功的响应_**。这有些类似数据库中的两阶段提交协议。
 
 在整个消息的广播过程中，Leader 服务器会每个事物请求生成对应的 Proposal，并为其分配一个全局唯一的递增的事务 ID(ZXID)，之后再对其进行广播。
 
@@ -349,7 +336,7 @@ ZAB 协议的原子广播要求：
 
 - 如果是，则拿到锁。
   - 释放锁：执行完操作后，把创建的节点给删掉。
-- 如果不是，则监听比自己要小1的节点变化。
+- 如果不是，则监听比自己要小 1 的节点变化。
 
 ![img](http://dunwu.test.upcdn.net/snap/20200602192619.png)
 
