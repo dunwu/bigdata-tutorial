@@ -121,7 +121,7 @@ try {
 }
 ```
 
-### 异步回调发送
+### 异步响应发送
 
 代码如下，异步方式相对于“发送并忽略返回”的方式的不同在于：在异步返回时可以执行一些操作，如：抛出异常、记录错误日志。
 
@@ -191,10 +191,10 @@ Kafka 内置了常用 Java 基础类型的序列化器，如：`StringSerializer
 
 为了实现 Producer 的幂等性，Kafka 引入了 Producer ID（即 PID）和 Sequence Number。
 
-- PID。每个新的 Producer 在初始化的时候会被分配一个唯一的 PID，这个 PID 对用户是不可见的。
-- Sequence Numbler。（对于每个 PID，该 Producer 发送数据的每个<Topic, Partition>都对应一个从 0 开始单调递增的 Sequence Number。
+- **PID**。每个新的 Producer 在初始化的时候会被分配一个唯一的 PID，这个 PID 对用户是不可见的。
+- **Sequence Numbler**。对于每个 PID，该 Producer 发送数据的每个 `<Topic, Partition>` 都对应一个从 0 开始单调递增的 Sequence Number。
 
-Broker 端在缓存中保存了这 seq number，对于接收的每条消息，如果其序号比 Broker 缓存中序号大于 1 则接受它，否则将其丢弃。这样就可以实现了消息重复提交了。但是，只能保证单个 Producer 对于同一个<Topic, Partition>的 Exactly Once 语义。不能保证同一个 Producer 一个 topic 不同的 partion 幂等。
+Broker 端在缓存中保存了这 seq number，对于接收的每条消息，如果其序号比 Broker 缓存中序号大于 1 则接受它，否则将其丢弃。这样就可以实现了消息重复提交了。但是，只能保证单个 Producer 对于同一个 `<Topic, Partition>` 的 Exactly Once 语义。不能保证同一个 Producer 一个 topic 不同的 partion 幂等。
 
 ![img](http://www.heartthinkdo.com/wp-content/uploads/2018/05/1-1.png)
 实现幂等之后：
@@ -294,14 +294,14 @@ Kafka 自 0.11 版本开始提供了对事务的支持，目前主要是在 read
 
 事务型 Producer 能够保证将消息原子性地写入到多个分区中。这批消息要么全部写入成功，要么全部失败。另外，事务型 Producer 也不惧进程的重启。Producer 重启回来后，Kafka 依然保证它们发送消息的精确一次处理。
 
-事务属性实现前提是幂等性，即在配置事务属性 `transaction.id` 时，必须还得配置幂等性；但是幂等性是可以独立使用的，不需要依赖事务属性。
+**事务属性实现前提是幂等性**，即在配置事务属性 `transaction.id` 时，必须还得配置幂等性；但是幂等性是可以独立使用的，不需要依赖事务属性。
 
 ### 引入事务目的
 
 在事务属性之前先引入了生产者幂等性，它的作用为：
 
-- 生产者多次发送消息可以封装成一个原子操作，要么都成功，要么失败。
-- consumer-transform-producer 模式下，因为消费者提交偏移量出现问题，导致在重复消费消息时，生产者重复生产消息。需要将这个模式下消费者提交偏移量操作和生产者一系列生成消息的操作封装成一个原子操作。
+- **生产者多次发送消息可以封装成一个原子操作**，要么都成功，要么失败。
+- consumer-transform-producer 模式下，因为消费者提交偏移量出现问题，导致**重复消费**。需要将这个模式下消费者提交偏移量操作和生产者一系列生成消息的操作封装成一个原子操作。
 
 **消费者提交偏移量导致重复消费消息的场景**：消费者在消费消息完成提交便宜量 o2 之前挂掉了（假设它最近提交的偏移量是 o1），此时执行再均衡时，其它消费者会重复消费消息(o1 到 o2 之间的消息）。
 
