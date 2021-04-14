@@ -37,7 +37,11 @@
 
 ### 1.1. 消费者
 
-Kafka 消费者以 **pull 方式**从 Broker 拉取消息，消费者可以订阅一个或多个主题，然后按照消息生成顺序（**kafka 只能保证分区中消息的顺序**）读取消息。
+Kafka 消费者（Consumer）以 **pull 方式**从 Broker 拉取消息，Consumer可以订阅一个或多个主题，然后按照消息生成顺序（**kafka 只能保证分区中消息的顺序**）读取消息。
+
+![img](http://kafka.apachecn.org/10/images/log_consumer.png)
+
+每个 Consumer 的唯一元数据是该 Consumer 在日志中消费的位置。这个偏移量是由 Consumer 控制的：Consumer 通常会在读取记录时线性的增加其偏移量。但实际上，由于位置由 Consumer 控制，所以 Consumer 可以采用任何顺序来消费记录。
 
 **一个消息只有在所有跟随者节点都进行了同步，才会被消费者获取到**。如下图，只能消费 Message0、Message1、Message2：
 

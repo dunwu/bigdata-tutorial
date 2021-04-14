@@ -16,8 +16,10 @@
   - [3.2. 何时关闭 TCP 连接](#32-何时关闭-tcp-连接)
 - [4. 序列化](#4-序列化)
 - [5. 分区](#5-分区)
-  - [5.1. 为什么要分区](#51-为什么要分区)
-  - [5.2. Kafka 默认分区策略](#52-kafka-默认分区策略)
+  - [5.1. 什么是分区](#51-什么是分区)
+  - [5.2. 为什么要分区](#52-为什么要分区)
+  - [5.3. 分区策略](#53-分区策略)
+  - [5.4. 自定义分区策略](#54-自定义分区策略)
 - [6. 压缩](#6-压缩)
   - [6.1. Kafka 的消息格式](#61-kafka-的消息格式)
   - [6.2. Kafka 的压缩流程](#62-kafka-的压缩流程)
@@ -221,21 +223,57 @@ Kafka 内置了常用 Java 基础类型的序列化器，如：`StringSerializer
 
 ## 5. 分区
 
-### 5.1. 为什么要分区
+### 5.1. 什么是分区
 
-分区的作用就是提供负载均衡的能力。
+Kafka 的数据结构采用三级结构，即：主题（Topic）、分区（Partition）、消息（Record）。
+
+在 Kafka 中，任意一个 Topic 维护了一组 Partition 日志，如下所示：
+
+![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-log-anatomy.png)
+
+每个 Partition 都是一个单调递增的、不可变的日志记录，以不断追加的方式写入数据。Partition 中的每条记录会被分配一个单调递增的 id 号，称为偏移量（Offset），用于唯一标识 Partition 内的每条记录。
+
+### 5.2. 为什么要分区
+
+为什么 Kafka 的数据结构采用三级结构？
+
+**分区的作用就是提供负载均衡的能力**，以实现系统的高伸缩性（Scalability）。
 
 不同的分区能够被放置到不同节点的机器上，而数据的读写操作也都是针对分区这个粒度而进行的，这样每个节点的机器都能独立地执行各自分区的读写请求处理。并且，我们还可以通过添加新的机器节点来增加整体系统的吞吐量。
 
-### 5.2. Kafka 默认分区策略
+### 5.3. 分区策略
+
+所谓分区策略是决定生产者将消息发送到哪个分区的算法，也就是负载均衡算法。
 
 前文中已经提到，Kafka 生产者发送消息使用的对象 `ProducerRecord` ，可以选填 Partition 和 Key。不过，大多数应用会用到 key。key 有两个作用：作为消息的附加信息；也可以用来决定消息该被写到 Topic 的哪个 Partition，拥有相同 key 的消息将被写入同一个 Partition。
 
 **如果 `ProducerRecord` 指定了 Partition，则分区器什么也不做**，否则分区器会根据 key 选择一个 Partition 。
 
-如果 key 为 null，Kafka 分区器会使用轮询算法将消息均衡分发到各个 Partition 上。
+- 没有 key 时的分发逻辑：每隔 `topic.metadata.refresh.interval.ms` 的时间，随机选择一个 partition。这个时间窗口内的所有记录发送到这个 partition。发送数据出错后会重新选择一个 partition。
+- 根据 key 分发：对 key 求 hash，然后对 partition 数量求模。这里的关键点在于：同一个 key 总是被映射到同一个 Partition 上，所以在进行映射时，Kafka 会使用 Topic 的所有 Partition ，而不仅仅是可用的 Partition。这意味着，如果写入数据的 Partition 是不可用的，那么就会出错。
 
-如果 key 不为 null，Kafka 会使用哈希算法计算 key 的哈希值，然后将消息映射到特定的 Partition 上。这里的关键点在于：同一个 key 总是被映射到同一个 Partition 上，所以在进行映射时，Kafka 会使用 Topic 的所有 Partition ，而不仅仅是可用的 Partition。这意味着，如果写入数据的 Partition 是不可用的，那么就会出错。
+### 5.4. 自定义分区策略
+
+如果 Kafka 的默认分区策略无法满足实际需要，可以自定义分区策略。需要显式地配置生产者端的参数 `partitioner.class`。这个参数该怎么设定呢？
+
+首先，要实现 `org.apache.kafka.clients.producer.Partitioner ` 接口。这个接口定义了两个方法：`partition` 和 `close`，通常只需要实现最重要的 `partition` 方法。我们来看看这个方法的方法签名：
+
+```java
+int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster);
+```
+
+这里的 `topic`、`key`、`keyBytes`、`value `和 `valueBytes` 都属于消息数据，`cluster` 则是集群信息（比如当前 Kafka 集群共有多少主题、多少 Broker 等）。Kafka 给你这么多信息，就是希望让你能够充分地利用这些信息对消息进行分区，计算出它要被发送到哪个分区中。
+
+接着，设置 `partitioner.class` 参数为自定义类的全限定名，那么生产者程序就会按照你的代码逻辑对消息进行分区。
+
+负载均衡算法常见的有：
+
+- 随机算法
+- 轮询算法
+- 最小活跃数算法
+- 源地址哈希算法
+
+可以根据实际需要去实现。
 
 ## 6. 压缩
 
