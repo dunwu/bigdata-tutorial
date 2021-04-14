@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: http://dunwu.test.upcdn.net/common/logo/dunwu-logo.png
+heroImage: /images/dunwu-logo-200.png
 heroText: BIGDATA TUTORIAL
 tagline: ☕ BIGDATA TUTORIAL 是一个大数据教程。
 actionLink: /
@@ -54,14 +54,14 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 
 > **[Kafka](kafka) 是一个分布式流处理平台，此外，它也被广泛应用于消息队列**。
 
-- [Kafka 应用指南](kafka/kafka-quickstart.md)
-- [Kafka 生产者](kafka/kafka-producer.md)
-- [Kafka 消费者](kafka/kafka-consumer.md)
-- [Kafka 可靠的数据传递](kafka/kafka-reliable-transmission.md)
-- [Kafka 分区再均衡](kafka/kafka-rebalance.md)
-- [Kafka 集群](kafka/kafka-cluster.md)
-- [Kafka 流式处理](kafka/kafka-stream.md)
-- [Kafka 运维指南](kafka/kafka-ops.md)
+- [Kafka 快速入门](kafka/Kafka快速入门.md)
+- [Kafka 生产者](kafka/Kafka生产者.md)
+- [Kafka 消费者](kafka/Kafka消费者.md)
+- [Kafka 可靠传输](kafka/Kafka可靠传输.md)
+- [Kafka 集群](kafka/Kafka集群.md)
+- [Kafka 物理存储](kafka/Kafka物理存储.md)
+- [Kafka 流式处理](kafka/Kafka流式处理.md)
+- [Kafka 运维](kafka/Kafka运维.md)
 
 ### 其他
 

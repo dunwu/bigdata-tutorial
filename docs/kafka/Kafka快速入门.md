@@ -1,4 +1,4 @@
-# Kafka 应用指南
+# Kafka 快速入门
 
 > Kafka 是 Apache 的开源项目。**Kafka 既可以作为一个消息队列中间件，也可以作为一个分布式流处理平台**。
 >
@@ -6,31 +6,37 @@
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
-- [一、Kafka 简介](#一kafka-简介)
-  - [Kafka 的特性](#kafka-的特性)
-  - [Kafka 核心功能](#kafka-核心功能)
-  - [Kafka 适用场景](#kafka-适用场景)
-  - [Kafka 术语](#kafka-术语)
-- [快速入门](#快速入门)
-  - [引入依赖](#引入依赖)
-  - [Kafka 核心 API](#kafka-核心-api)
-  - [发送消息](#发送消息)
-  - [消费消息流程](#消费消息流程)
-- [Kafka 分区](#kafka-分区)
-  - [什么是分区](#什么是分区)
-  - [为什么要使用分区](#为什么要使用分区)
-- [参考资料](#参考资料)
-- [🚪 传送](#🚪-传送)
+- [1. Kafka 简介](#1-kafka-简介)
+  - [1.1. Kafka 的特性](#11-kafka-的特性)
+  - [1.2. Kafka 核心功能](#12-kafka-核心功能)
+  - [1.3. Kafka 适用场景](#13-kafka-适用场景)
+  - [1.4. Kafka 术语](#14-kafka-术语)
+  - [1.5. Kafka 基本工作流程](#15-kafka-基本工作流程)
+- [2. Kafka 服务端使用入门](#2-kafka-服务端使用入门)
+  - [2.1. 步骤一、获取 Kafka](#21-步骤一获取-kafka)
+  - [2.2. 步骤二、启动 Kafka 环境](#22-步骤二启动-kafka-环境)
+  - [2.3. 步骤三、创建一个 TOPIC 并存储您的事件](#23-步骤三创建一个-topic-并存储您的事件)
+  - [2.4. 步骤四、向 Topic 写入 Event](#24-步骤四向-topic-写入-event)
+  - [2.5. 步骤五、读 Event](#25-步骤五读-event)
+  - [2.6. 步骤六、通过 KAFKA CONNECT 将数据作为事件流导入/导出](#26-步骤六通过-kafka-connect-将数据作为事件流导入导出)
+  - [2.7. 步骤七、使用 Kafka Streams 处理事件](#27-步骤七使用-kafka-streams-处理事件)
+  - [2.8. 步骤八、终止 Kafka 环境](#28-步骤八终止-kafka-环境)
+- [3. Kafka Java 客户端使用入门](#3-kafka-java-客户端使用入门)
+  - [3.1. 引入 maven 依赖](#31-引入-maven-依赖)
+  - [3.2. Kafka 核心 API](#32-kafka-核心-api)
+  - [3.3. 发送消息](#33-发送消息)
+  - [3.4. 消费消息流程](#34-消费消息流程)
+- [4. 参考资料](#4-参考资料)
 
 <!-- /TOC -->
 
-## Kafka 简介
+## 1. Kafka 简介
 
 Kafka 是一个消息队列中间件，也是一个分布式流处理平台。
 
-![img](http://dunwu.test.upcdn.net/snap/20200726185629.png)
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210407151324.png)
 
-### Kafka 的特性
+### 1.1. Kafka 的特性
 
 Kafka 具有如下特性：
 
@@ -38,13 +44,13 @@ Kafka 具有如下特性：
 - **高性能** - 通过横向扩展生产者、消费者(通过消费者群组实现)和 Broker（通过扩展实现系统伸缩性）可以轻松处理巨大的消息流。
 - **消息持久化** - Kafka 将所有的消息存储到磁盘，并在结构中对它们进行排序，以便利用顺序磁盘读取，所以消息不会丢失。
 
-### Kafka 核心功能
+### 1.2. Kafka 核心功能
 
 - **发布 / 订阅** - 发布 / 订阅类似于一个消息系统，读写流式的数据
 - **流处理** - 编写可扩展的流处理应用，用于实时事件响应
 - **存储** - 将流式数据存储在一个分布式、有副本的集群中
 
-### Kafka 适用场景
+### 1.3. Kafka 适用场景
 
 Kafka 适用于两种场景:
 
@@ -55,13 +61,13 @@ Kafka 允许您将大量消息通过集中介质存储并存储，而不用担�
 
 ![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-event-system.png)
 
-### Kafka 术语
+### 1.4. Kafka 术语
 
 - 消息：Record。Kafka 是消息引擎嘛，这里的消息就是指 Kafka 处理的主要对象。
 - **Broker** - Kafka 集群包含一个或多个节点，这种节点被称为 Broker。
 - **Topic**：Topic 是承载消息的逻辑容器，在实际使用中多用来区分具体的业务。不同 Topic 的消息是物理隔离的；同一个 Topic 的消息保存在一个或多个 Broker 上，但用户只需指定消息的 Topic 即可生产或消费数据而不必关心数据存于何处。对于每一个 Topic， Kafka 集群都会维持一个分区日志。
 - **Partition**：分区。一个有序不变的消息序列。为了提高 Kafka 的吞吐率，每个 Topic 包含一个或多个 Partition，每个 Partition 在物理上对应一个文件夹，该文件夹下存储这个 Partition 的所有消息和索引文件。Kafka 日志的 Partition 分布在 Kafka 集群的节点上。每个节点在处理数据和请求时，共享这些 Partition。每一个 Partition 都会在已配置的节点上进行备份，确保容错性。
-- **Offset**：消息位移。表示分区中每条消息的位置信息，是一个单调递增且不变的值。
+- **Offset**：消息偏移量。表示分区中每条消息的位置信息，是一个单调递增且不变的值。
 - **Replica**：副本。Kafka 中同一条消息能够被拷贝到多个地方以提供数据冗余，这些地方就是所谓的副本。副本还分为领导者副本和追随者副本，各自有不同的角色划分。副本是在分区层级下的，即每个分区可配置多个副本实现高可用。
 - **Producer**：生产者。向主题发布新消息的应用程序。Producer 可以将数据发布到所选择的 Topic 中。Producer 负责将记录分配到 Topic 中的哪一个 Partition 中。
 - **Consumer**：消费者。从主题订阅新消息的应用程序。Consumer 使用一个 Consumer Group 来进行标识，发布到 Topic 中的每条记录被分配给订阅 Consumer Group 中的一个 Consumer，Consumer 可以分布在多个进程中或者多个机器上。
@@ -69,12 +75,11 @@ Kafka 允许您将大量消息通过集中介质存储并存储，而不用担�
   - 如果所有的 Consumer 在不同的 Consumer Group 中，每条消息记录会广播到所有的 Consumer。
 - **Consumer Group**：消费者组。多个 Consumer 实例共同组成的一个组，同时消费多个分区以实现高吞吐。每个 Consumer 属于一个特定的 Consumer Group（可以为每个 Consumer 指定 group name，若不指定 Group 则属于默认的 Group）。**在同一个 Group 中，每一个 Consumer 可以消费多个 Partition，但是一个 Partition 只能指定给一个这个 Group 中一个 Consumer**。
 - **Consumer Offset**：消费者位移。表征消费者消费进度，每个消费者都有自己的消费者位移。
-- **Rebalance**：重平衡。 消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。
+- **Rebalance**：再均衡。 消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。
 
-<div align="center">
-<img src="http://kafka.apachecn.org/10/images/consumer-groups.png" />
-</div>
-### Kafka 基本工作流程
+![img](http://kafka.apachecn.org/10/images/consumer-groups.png)
+
+### 1.5. Kafka 基本工作流程
 
 Kafka 通过 Topic 对存储的流数据进行分类。
 
@@ -82,19 +87,13 @@ Topic 就是数据主题，是数据记录发布的地方，可以用来区分�
 
 在 Kafka 中，任意一个 Topic 维护一个 Partition 日志，如下所示：
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-log-anatomy.png" width="400"/>
-</div>
-
+![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-log-anatomy.png)
 
 每个 Partition 都是一个有序的、不可变的记录序列，不断追加到结构化的提交日志中。Partition 中的记录每个分配一个连续的 id 号，称为偏移量（Offset），用于唯一标识 Partition 内的每条记录。
 
 **Kafka 集群持久化保存（使用可配置的保留期限）所有发布记录——无论它们是否被消费**。例如，如果保留期限被设置为两天，则在记录发布后的两天之内，它都可以被消费，超过时间后将被丢弃以释放空间。Kafka 的性能和数据大小无关，所以长时间存储数据没有什么问题。
 
-<div align="center">
-<img src="http://kafka.apachecn.org/10/images/log_consumer.png" width="400"/>
-</div>
-
+![img](http://kafka.apachecn.org/10/images/log_consumer.png)
 
 实际上，保留在每个 Consumer 基础上的唯一元数据是该 Consumer 在日志中消费的位置。这个偏移量是由 Consumer 控制的：Consumer 通常会在读取记录时线性的增加其偏移量。但实际上，由于位置由 Consumer 控制，所以 Consumer 可以采用任何顺序来消费记录。
 
@@ -105,9 +104,126 @@ Topic 就是数据主题，是数据记录发布的地方，可以用来区分�
 
 ![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-producer-consumer.png)
 
-## 快速入门
+## 2. Kafka 服务端使用入门
 
-### 引入依赖
+### 2.1. 步骤一、获取 Kafka
+
+下载最新的 Kafka 版本并解压到本地。
+
+```bash
+$ tar -xzf kafka_2.13-2.7.0.tgz
+$ cd kafka_2.13-2.7.0
+```
+
+### 2.2. 步骤二、启动 Kafka 环境
+
+> 注意：本地必须已安装 Java8
+
+执行以下指令，保证所有服务按照正确的顺序启动：
+
+```bash
+# Start the ZooKeeper service
+# Note: Soon, ZooKeeper will no longer be required by Apache Kafka.
+$ bin/zookeeper-server-start.sh config/zookeeper.properties
+```
+
+打开另一个终端会话，并执行：
+
+```bash
+# Start the Kafka broker service
+$ bin/kafka-server-start.sh config/server.properties
+```
+
+一旦所有服务成功启动，您就已经成功运行了一个基本的 kafka 环境。
+
+### 2.3. 步骤三、创建一个 TOPIC 并存储您的事件
+
+Kafka 是一个分布式事件流处理平台，它可以让您通过各种机制读、写、存储并处理事件（[_events_](https://kafka.apache.org/documentation/#messages)，也被称为记录或消息）
+
+示例事件包括付款交易，手机的地理位置更新，运输订单，物联网设备或医疗设备的传感器测量等等。 这些事件被组织并存储在主题中（[_topics_](https://kafka.apache.org/documentation/#intro_concepts_and_terms)）。 简单来说，主题类似于文件系统中的文件夹，而事件是该文件夹中的文件。
+
+因此，在您写入第一个事件之前，您必须先创建一个 Topic。执行以下指令：
+
+```bash
+$ bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
+```
+
+所有的 Kafka 命令行工具都有附加可选项：不加任何参数，运行 `kafka-topics.sh` 命令会显示使用信息。例如，会显示新 Topic 的分区数等细节。
+
+```bash
+$ bin/kafka-topics.sh --describe --topic quickstart-events --bootstrap-server localhost:9092
+Topic:quickstart-events  PartitionCount:1    ReplicationFactor:1 Configs:
+    Topic: quickstart-events Partition: 0    Leader: 0   Replicas: 0 Isr: 0
+```
+
+### 2.4. 步骤四、向 Topic 写入 Event
+
+Kafka 客户端和 Kafka Broker 的通信是通过网络读写 Event。一旦收到信息，Broker 会将其以您需要的时间（甚至永久化）、容错化的方式存储。
+
+执行 `kafka-console-producer.sh` 命令将 Event 写入 Topic。默认，您输入的任意行会作为独立 Event 写入 Topic：
+
+```bash
+$ bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
+This is my first event
+This is my second event
+```
+
+> 您可以通过 `Ctrl-C` 在任何时候中断 `kafka-console-producer.sh`
+
+### 2.5. 步骤五、读 Event
+
+执行 kafka-console-consumer.sh 以读取写入 Topic 中的 Event
+
+```bash
+$ bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+This is my first event
+This is my second event
+```
+
+> 您可以通过 `Ctrl-C` 在任何时候中断 `kafka-console-consumer.sh`
+
+由于 Event 被持久化存储在 Kafka 中，因此您可以根据需要任意多次地读取它们。 您可以通过打开另一个终端会话并再次重新运行上一个命令来轻松地验证这一点。
+
+### 2.6. 步骤六、通过 KAFKA CONNECT 将数据作为事件流导入/导出
+
+您可能有大量数据，存储在传统的关系数据库或消息队列系统中，并且有许多使用这些系统的应用程序。 通过 [Kafka Connect](https://kafka.apache.org/documentation/#connect)，您可以将来自外部系统的数据持续地导入到 Kafka 中，反之亦然。 因此，将已有系统与 Kafka 集成非常容易。为了使此过程更加容易，有数百种此类连接器可供使用。
+
+需要了解有关如何将数据导入和导出 Kafka 的更多信息，可以参考：[Kafka Connect section](https://kafka.apache.org/documentation/#connect) 章节。
+
+### 2.7. 步骤七、使用 Kafka Streams 处理事件
+
+一旦将数据作为 Event 存储在 Kafka 中，就可以使用 [Kafka Streams](https://kafka.apache.org/documentation/streams) 的 Java / Scala 客户端。它允许您实现关键任务的实时应用程序和微服务，其中输入（和/或）输出数据存储在 Kafka Topic 中。
+
+Kafka Streams 结合了 Kafka 客户端编写和部署标准 Java 和 Scala 应用程序的简便性，以及 Kafka 服务器集群技术的优势，使这些应用程序具有高度的可伸缩性、弹性、容错性和分布式。该库支持一次性处理，有状态的操作，以及聚合、窗口化化操作、join、基于事件时间的处理等等。
+
+```java
+KStream<String, String> textLines = builder.stream("quickstart-events");
+
+KTable<String, Long> wordCounts = textLines
+            .flatMapValues(line -> Arrays.asList(line.toLowerCase().split(" ")))
+            .groupBy((keyIgnored, word) -> word)
+            .count();
+
+wordCounts.toStream().to("output-topic"), Produced.with(Serdes.String(), Serdes.Long()));
+```
+
+[Kafka Streams demo](https://kafka.apache.org/25/documentation/streams/quickstart) 和 [app development tutorial](https://kafka.apache.org/25/documentation/streams/tutorial) 展示了如何从头到尾的编码并运行一个流式应用。
+
+### 2.8. 步骤八、终止 Kafka 环境
+
+1. 如果尚未停止，请使用 `Ctrl-C` 停止生产者和消费者客户端。
+2. 使用 `Ctrl-C` 停止 Kafka 代理。
+3. 最后，使用 `Ctrl-C` 停止 ZooKeeper 服务器。
+
+如果您还想删除本地 Kafka 环境的所有数据，包括您在此过程中创建的所有事件，请执行以下命令：
+
+```bash
+$ rm -rf /tmp/kafka-logs /tmp/zookeeper
+```
+
+## 3. Kafka Java 客户端使用入门
+
+### 3.1. 引入 maven 依赖
 
 Stream API 的 maven 依赖：
 
@@ -129,21 +245,19 @@ Stream API 的 maven 依赖：
 </dependency>
 ```
 
-### Kafka 核心 API
+### 3.2. Kafka 核心 API
 
 Kafka 有 4 个核心 API
 
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-core-api.png" width="400"/>
-</div>
-
+![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-core-api.png)
 
 - [Producer API](https://kafka.apache.org/documentation.html#producerapi) - 允许一个应用程序发布一串流式数据到一个或者多个 Kafka Topic。
 - [Consumer API](https://kafka.apache.org/documentation.html#consumerapi) - 允许一个应用程序订阅一个或多个 Kafka Topic，并且对发布给他们的流式数据进行处理。
 - [Streams API](https://kafka.apache.org/documentation/streams) - 允许一个应用程序作为一个流处理器，消费一个或者多个 Kafka Topic 产生的输入流，然后生产一个输出流到一个或多个 Kafka Topic 中去，在输入输出流中进行有效的转换。
 - [Connector API](https://kafka.apache.org/documentation.html#connect) - 允许构建并运行可重用的生产者或者消费者，将 Kafka Topic 连接到已存在的应用程序或数据库。例如，连接到一个关系型数据库，捕捉表的所有变更内容。
+- Admin API - 支持管理和检查 Topic，Broker，ACL 和其他 Kafka 对象。
 
-### 发送消息
+### 3.3. 发送消息
 
 #### 发送并忽略返回
 
@@ -247,7 +361,7 @@ public class ProducerDemo {
 }
 ```
 
-### 消费消息流程
+### 3.4. 消费消息流程
 
 #### 消费流程
 
@@ -358,63 +472,12 @@ public void consumeMessageForIndependentConsumer(String topic){
 }
 ```
 
-## 持久化
-
-在基本工作流程中提到了：**Kafka 集群持久化保存（使用可配置的保留期限）所有发布记录——无论它们是否被消费**。Kafka 是如何实现持久化的呢？
-
-**Kafka 对消息的存储和缓存严重依赖于文件系统**。
-
-- 顺序磁盘访问在某些情况下比随机内存访问还要快！在 Kafka 中，所有数据一开始就被写入到文件系统的持久化日志中，而不用在 cache 空间不足的时候 flush 到磁盘。实际上，这表明数据被转移到了内核的 pagecache 中。所以，**虽然 Kafka 数据存储在磁盘中，但其访问性能也不低**。
-
-- Kafka 的协议是建立在一个 “消息块” 的抽象基础上，合理将消息分组。 这使得网络请求将多个消息打包成一组，而不是每次发送一条消息，从而使整组消息分担网络中往返的开销。Consumer 每次获取多个大型有序的消息块，并由服务端依次将消息块一次加载到它的日志中。这可以**有效减少大量的小型 I/O 操作**。
-- 由于 Kafka 在 Producer、Broker 和 Consumer 都**共享标准化的二进制消息格式**，这样数据块不用修改就能在他们之间传递。这可以**避免字节拷贝带来的开销**。
-- Kafka 以高效的批处理格式支持一批消息可以压缩在一起发送到服务器。这批消息将以压缩格式写入，并且在日志中保持压缩，只会在 Consumer 消费时解压缩。**压缩传输数据，可以有效减少网络带宽开销**。
-  - Kafka 支持 GZIP，Snappy 和 LZ4 压缩协议。
-
-所有这些优化都允许 Kafka 以接近网络速度传递消息。
-
-## Kafka 分区
-
-### 什么是分区
-
-Kafka 通过 Topic 对存储的流数据进行分类。Topic 就是数据主题，是数据记录发布的地方，可以用来区分业务系统。一个 Topic 可以拥有一个或者多个消费者来订阅它的数据。
-
-在 Kafka 中，任意一个 Topic 维护一个 Partition 日志，如下所示：
-
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-log-anatomy.png" width="400"/>
-</div>
-
-
-每个 Partition 都是一个有序的、不可变的记录序列，不断追加到结构化的提交日志中。Partition 中的记录每个分配一个连续的 id 号，称为偏移量（Offset），用于唯一标识 Partition 内的每条记录。
-
-**Kafka 集群持久化保存（使用可配置的保留期限）所有发布记录——无论它们是否被消费**。例如，如果保留期限被设置为两天，则在记录发布后的两天之内，它都可以被消费，超过时间后将被丢弃以释放空间。Kafka 的性能和数据大小无关，所以长时间存储数据没有什么问题。
-
-<div align="center">
-<img src="http://kafka.apachecn.org/10/images/log_consumer.png" width="400"/>
-</div>
-
-实际上，保留在每个 Consumer 基础上的唯一元数据是该 Consumer 在日志中消费的位置。这个偏移量是由 Consumer 控制的：Consumer 通常会在读取记录时线性的增加其偏移量。但实际上，由于位置由 Consumer 控制，所以 Consumer 可以采用任何顺序来消费记录。
-
-### 为什么要使用分区
-
-对数据进行分区的主要原因，就是为了实现系统的**伸缩性**。不同的分区能够被放置到不同节点的机器上，而数据的读写操作也都是针对分区这个粒度而进行的，这样每个节点的机器都能独立地执行各自分区的读写请求处理。并且，我们还可以**通过添加新的节点机器来增加整体系统的吞吐量**。
-
-日志中的 Partition 有以下几个用途：
-
-- 首先，它实现了 Kafka 的**伸缩性**，可以通过添加新节点来**扩容**。
-- 其次，不同的分区能够被放置到不同节点的机器上，而数据的读写操作也都是针对分区这个粒度而进行的，这样每个节点的机器都能独立地执行各自分区的读写请求处理。从而提升 Kafka 的**吞吐量**。
-
-<div align="center">
-<img src="http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-producer-consumer.png" width="640"/>
-</div>
-
-## 参考资料
+## 4. 参考资料
 
 - **官方**
-  - [Kakfa 官网](http://kafka.apache.org/)
-  - [Kakfa Github](https://github.com/apache/kafka)
-  - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+  - [Kafka 官网](http://kafka.apache.org/)
+  - [Kafka Github](https://github.com/apache/kafka)
+  - [Kafka 官方文档](https://kafka.apache.org/documentation/)
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**
@@ -424,7 +487,3 @@ Kafka 通过 Topic 对存储的流数据进行分类。Topic 就是数据主题�
   - [Thorough Introduction to Apache Kafka](https://hackernoon.com/thorough-introduction-to-apache-kafka-6fbf2989bbc1)
   - [Kafka(03) Kafka 介绍](http://www.heartthinkdo.com/?p=2006#233)
   - [Kafka 剖析（一）：Kafka 背景及架构介绍](http://www.infoq.com/cn/articles/kafka-analysis-part-1)
-
-## 🚪 传送
-
-◾ 🏠 [BIGDATA-TUTORIAL 首页](https://github.com/dunwu/bigdata-tutorial) ◾ 🎯 [我的博客](https://github.com/dunwu/blog) ◾

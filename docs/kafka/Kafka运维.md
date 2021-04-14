@@ -1,4 +1,4 @@
-# Kafka 运维指南
+# Kafka 运维
 
 > 环境要求：
 >
@@ -7,32 +7,36 @@
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
-- [一、Kafka 单点部署](#一kafka-单点部署)
-  - [下载解压](#下载解压)
-  - [启动服务器](#启动服务器)
-  - [停止服务器](#停止服务器)
-- [二、Kafka 集群部署](#二kafka-集群部署)
-  - [修改配置](#修改配置)
-  - [启动](#启动)
-- [三、Kafka 命令](#三kafka-命令)
-  - [主题（Topic）](#主题topic)
-  - [生产者（Producers）](#生产者producers)
-  - [消费者（Consumers）](#消费者consumers)
-  - [配置（Config）](#配置config)
-  - [ACL](#acl)
-  - [ZooKeeper](#zookeeper)
-- [四、Kakfa 工具](#四kakfa-工具)
-- [五、Kafka 核心配置](#五kafka-核心配置)
-  - [Broker 级别配置](#broker-级别配置)
-  - [Topic 级别配置](#topic-级别配置)
-  - [操作系统参数](#操作系统参数)
-- [参考资料](#参考资料)
+- [1. Kafka 单点部署](#1-kafka-单点部署)
+  - [1.1. 下载解压](#11-下载解压)
+  - [1.2. 启动服务器](#12-启动服务器)
+  - [1.3. 停止服务器](#13-停止服务器)
+- [2. Kafka 集群部署](#2-kafka-集群部署)
+  - [2.1. 修改配置](#21-修改配置)
+  - [2.2. 启动](#22-启动)
+- [3. Kafka 命令](#3-kafka-命令)
+  - [3.1. 主题（Topic）](#31-主题topic)
+  - [3.2. 生产者（Producers）](#32-生产者producers)
+  - [3.3. 消费者（Consumers）](#33-消费者consumers)
+  - [3.4. 配置（Config）](#34-配置config)
+  - [3.5. ACL](#35-acl)
+  - [3.6. ZooKeeper](#36-zookeeper)
+- [4. Kafka 工具](#4-Kafka-工具)
+- [5. Kafka 核心配置](#5-kafka-核心配置)
+  - [5.1. Broker 级别配置](#51-broker-级别配置)
+  - [5.2. Topic 级别配置](#52-topic-级别配置)
+  - [5.3. 操作系统参数](#53-操作系统参数)
+- [6. Kafka 集群规划](#6-kafka-集群规划)
+  - [6.1. 操作系统](#61-操作系统)
+  - [6.2. 磁盘](#62-磁盘)
+  - [6.3. 带宽](#63-带宽)
+- [7. 参考资料](#7-参考资料)
 
 <!-- /TOC -->
 
-## 一、Kafka 单点部署
+## 1. Kafka 单点部署
 
-### 下载解压
+### 1.1. 下载解压
 
 进入官方下载地址：<http://kafka.apache.org/downloads，选择合适版本。>
 
@@ -45,7 +49,7 @@ cd kafka_2.11-1.1.0
 
 现在您已经在您的机器上下载了最新版本的 Kafka。
 
-### 启动服务器
+### 1.2. 启动服务器
 
 由于 Kafka 依赖于 ZooKeeper，所以运行前需要先启动 ZooKeeper
 
@@ -64,7 +68,7 @@ $ bin/kafka-server-start.sh config/server.properties
 ...
 ```
 
-### 停止服务器
+### 1.3. 停止服务器
 
 执行所有操作后，可以使用以下命令停止服务器
 
@@ -72,9 +76,9 @@ $ bin/kafka-server-start.sh config/server.properties
 bin/kafka-server-stop.sh config/server.properties
 ```
 
-## 二、Kafka 集群部署
+## 2. Kafka 集群部署
 
-### 修改配置
+### 2.1. 修改配置
 
 复制配置为多份（Windows 使用 copy 命令代理）：
 
@@ -101,7 +105,7 @@ log.dir=/tmp/kafka-logs-2
 
 端口故意配置的不一致，是为了可以在一台机器启动多个应用节点。
 
-### 启动
+### 2.2. 启动
 
 根据这两份配置启动三个服务器节点：
 
@@ -132,9 +136,9 @@ Topic:my-replicated-topic   PartitionCount:1    ReplicationFactor:3 Configs:
 - replicas - 是复制此分区日志的节点列表，无论它们是否为领导者，或者即使它们当前处于活动状态。
 - isr - 是“同步”复制品的集合。这是副本列表的子集，该列表当前处于活跃状态并且已经被领导者捕获。
 
-## 三、Kafka 命令
+## 3. Kafka 命令
 
-### 主题（Topic）
+### 3.1. 主题（Topic）
 
 #### 创建 Topic
 
@@ -172,7 +176,7 @@ kafka-topics --zookeeper localhost:2181/kafka-cluster --describe
 kafka-topics --zookeeper localhost:2181/kafka-cluster --describe --under-replicated-partitions
 ```
 
-### 生产者（Producers）
+### 3.2. 生产者（Producers）
 
 #### 通过控制台输入生产消息
 
@@ -204,7 +208,7 @@ kafka-avro-console-producer --broker-list localhost:9092 --topic my.Topic --prop
 kafka-producer-perf-test --topic position-reports --throughput 10000 --record-size 300 --num-records 20000 --producer-props bootstrap.servers="localhost:9092"
 ```
 
-### 消费者（Consumers）
+### 3.3. 消费者（Consumers）
 
 #### 消费所有未消费的消息
 
@@ -254,7 +258,7 @@ kafka-consumer-groups --new-consumer --list --bootstrap-server localhost:9092
 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group testgroup
 ```
 
-### 配置（Config）
+### 3.4. 配置（Config）
 
 #### 设置 Topic 的保留时间
 
@@ -274,7 +278,7 @@ kafka-configs --zookeeper localhost:2181 --describe --entity-type topics --entit
 kafka-configs --zookeeper localhost:2181 --alter --entity-type topics --entity-name my-topic --delete-config retention.ms
 ```
 
-### ACL
+### 3.5. ACL
 
 #### 查看指定 Topic 的 ACL
 
@@ -292,20 +296,20 @@ kafka-acls --authorizer-properties zookeeper.connect=localhost:2181 --add --allo
 kafka-acls --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:Bob --producer --topic topicA
 ```
 
-### ZooKeeper
+### 3.6. ZooKeeper
 
 ```shell
 zookeeper-shell localhost:2182 ls /
 ```
 
-## 四、Kakfa 工具
+## 4. Kafka 工具
 
 - **[kafka-manager](https://github.com/yahoo/kafka-manager)**
 - **[KafkaOffsetMonitor](https://github.com/quantifind/KafkaOffsetMonitor)**
 
-## 五、Kafka 核心配置
+## 5. Kafka 核心配置
 
-### Broker 级别配置
+### 5.1. Broker 级别配置
 
 #### 存储配置
 
@@ -363,12 +367,12 @@ Kafka 与 ZooKeeper 相关的最重要的参数当属`zookeeper.connect`。这�
 - `log.retention.bytes`：这是指定 Broker 为消息保存的总磁盘容量大小。这个值默认是 -1，表明你想在这台 Broker 上保存多少数据都可以，至少在容量方面 Broker 绝对为你开绿灯，不会做任何阻拦。这个参数真正发挥作用的场景其实是在云上构建多租户的 Kafka 集群：设想你要做一个云上的 Kafka 服务，每个租户只能使用 100GB 的磁盘空间，为了避免有个“恶意”租户使用过多的磁盘空间，设置这个参数就显得至关重要了。
 - `message.max.bytes`：控制 Broker 能够接收的最大消息大小。默认的 1000012 太少了，还不到 1MB。实际场景中突破 1MB 的消息都是屡见不鲜的，因此在线上环境中设置一个比较大的值还是比较保险的做法。毕竟它只是一个标尺而已，仅仅衡量 Broker 能够处理的最大消息大小，即使设置大一点也不会耗费什么磁盘空间的。
 
-### Topic 级别配置
+### 5.2. Topic 级别配置
 
 - `retention.ms`：规定了该 Topic 消息被保存的时长。默认是 7 天，即该 Topic 只保存最近 7 天的消息。一旦设置了这个值，它会覆盖掉 Broker 端的全局参数值。
 - `retention.bytes`：规定了要为该 Topic 预留多大的磁盘空间。和全局参数作用相似，这个值通常在多租户的 Kafka 集群中会有用武之地。当前默认值是 -1，表示可以无限使用磁盘空间。
 
-### 操作系统参数
+### 5.3. 操作系统参数
 
 - 文件描述符限制
 - 文件系统类型
@@ -383,12 +387,40 @@ Kafka 与 ZooKeeper 相关的最重要的参数当属`zookeeper.connect`。这�
 
 最后是提交时间或者说是 Flush 落盘时间。向 Kafka 发送数据并不是真要等数据被写入磁盘才会认为成功，而是只要数据被写入到操作系统的页缓存（Page Cache）上就可以了，随后操作系统根据 LRU 算法会定期将页缓存上的“脏”数据落盘到物理磁盘上。这个定期就是由提交时间来确定的，默认是 5 秒。一般情况下我们会认为这个时间太频繁了，可以适当地增加提交间隔来降低物理磁盘的写操作。当然你可能会有这样的疑问：如果在页缓存中的数据在写入到磁盘前机器宕机了，那岂不是数据就丢失了。的确，这种情况数据确实就丢失了，但鉴于 Kafka 在软件层面已经提供了多副本的冗余机制，因此这里稍微拉大提交间隔去换取性能还是一个合理的做法。
 
-## 参考资料
+## 6. Kafka 集群规划
+
+### 6.1. 操作系统
+
+部署生产环境的 Kafka，强烈建议操作系统选用 Linux。
+
+**在 Linux 部署 Kafka 能够享受到零拷贝技术所带来的快速数据传输特性。**
+
+### 6.2. 磁盘
+
+磁盘对于 Kafka 的性能影响很高。
+
+应该选择普通的机械磁盘还是固态硬盘？前者成本低且容量大，但易损坏；后者性能优势大，不过单价高。
+
+建议使用普通机械硬盘即可。原因是：Kafka 大量使用磁盘不假，但它使用的方式多是顺序读写操作，一定程度上规避了机械磁盘最大的劣势，即随机读写操作慢。
+
+### 6.3. 带宽
+
+大部分公司使用普通的以太网络，千兆网络（1Gbps）应该是网络的标准配置。
+
+通常情况下你只能假设 Kafka 会用到 70% 的带宽资源，因为总要为其他应用或进程留一些资源。此外，通常要再额外预留出 2/3 的资源，因为不能让带宽资源总是保持在峰值。
+
+基于以上原因，一个 Kafka 集群数量的大致推算公式如下：
+
+```
+Kafka 机器数 = 单位时间需要处理的总数据量 / 单机所占用带宽
+```
+
+## 7. 参考资料
 
 - **官方**
-  - [Kakfa 官网](http://kafka.apache.org/)
-  - [Kakfa Github](https://github.com/apache/kafka)
-  - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+  - [Kafka 官网](http://kafka.apache.org/)
+  - [Kafka Github](https://github.com/apache/kafka)
+  - [Kafka 官方文档](https://kafka.apache.org/documentation/)
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**

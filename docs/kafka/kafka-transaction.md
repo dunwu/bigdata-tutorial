@@ -1,180 +1,30 @@
-# Kafka 生产者
+# Kafka 事务
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
-- [一、发送流程](#一发送流程)
-  - [Kafka 要素](#kafka-要素)
-  - [Producer 管理 TCP 连接](#producer-管理-tcp-连接)
-  - [Kafka 发送流程](#kafka-发送流程)
-- [二、发送方式](#二发送方式)
-  - [异步发送](#异步发送)
-  - [同步发送](#同步发送)
-  - [异步回调发送](#异步回调发送)
-- [三、序列化](#三序列化)
-- [四、分区](#四分区)
-- [五、幂等性](#五幂等性)
-  - [PID 和 Sequence Number](#pid-和-sequence-number)
-  - [生成 PID 的流程](#生成-pid-的流程)
-  - [幂等性的应用实例](#幂等性的应用实例)
-- [六、事务](#六事务)
-  - [引入事务目的](#引入事务目的)
-  - [事务操作的 API](#事务操作的-api)
-  - [Kafka 事务相关配置](#kafka-事务相关配置)
-  - [Kafka 事务应用示例](#kafka-事务应用示例)
-- [七、压缩](#七压缩)
-  - [Kafka 消息格式](#kafka-消息格式)
-  - [Kafka 如何压缩](#kafka-如何压缩)
-  - [何时解压缩](#何时解压缩)
-  - [压缩算法](#压缩算法)
-- [参考资料](#参考资料)
+- [1. 幂等性](#1-幂等性)
+  - [1.1. 什么是幂等性](#11-什么是幂等性)
+  - [1.2. Kafka Producer 的幂等性](#12-kafka-producer-的幂等性)
+  - [1.3. PID 和 Sequence Number](#13-pid-和-sequence-number)
+  - [1.4. 生成 PID 的流程](#14-生成-pid-的流程)
+  - [1.5. 幂等性的应用实例](#15-幂等性的应用实例)
+- [2. Kafka 事务](#2-kafka-事务)
+  - [2.1. 事务](#21-事务)
+  - [2.2. 事务型 Producer](#22-事务型-producer)
+  - [2.3. 事务操作的 API](#23-事务操作的-api)
+  - [2.4. Kafka 事务相关配置](#24-kafka-事务相关配置)
+  - [2.5. Kafka 事务应用示例](#25-kafka-事务应用示例)
+- [3. 参考资料](#3-参考资料)
 
 <!-- /TOC -->
 
-## 一、发送流程
+## 1. 幂等性
 
-### Kafka 要素
+### 1.1. 什么是幂等性
 
-Kafka 发送的对象叫做 `ProducerRecord` ，它有 4 个关键参数：
+**幂等**（idempotent、idempotence）是一个数学与计算机学概念，指的是：**一个幂等操作的特点是其任意多次执行所产生的影响均与一次执行的影响相同。**
 
-- `Topic` - 主题
-- `Partition` - 分区（非必填）
-- `Key` - 键（非必填）
-- `Value` - 值
-
-### Producer 管理 TCP 连接
-
-Kafka Producer 端管理 TCP 连接的方式是：
-
-1. Producer 实例创建时启动 Sender 线程，从而创建与 `bootstrap.servers` 中所有 Broker 的 TCP 连接。
-2. Producer 实例首次更新元数据信息之后，还会再次创建与集群中所有 Broker 的 TCP 连接。
-3. 如果 Producer 端发送消息到某台 Broker 时发现没有与该 Broker 的 TCP 连接，那么也会立即创建连接。
-4. 如果设置 Producer 端 `connections.max.idle.ms` 参数大于 0，则步骤 1 中创建的 TCP 连接会被自动关闭；如果设置该参数 =-1，那么步骤 1 中创建的 TCP 连接将无法被关闭，从而成为“僵尸”连接。
-
-### Kafka 发送流程
-
-Kafka 生产者发送消息流程：
-
-（1）**序列化** - 发送前，生产者要先把键和值序列化。
-
-（2）**分区** - 数据被传给分区器。分区器决定了一个消息被分配到哪个分区。
-
-（3）**批次传输** - 接着，这条记录会被添加到一个队列批次中。这个队列的所有消息都会发送到相同的主题和分区上。会由一个独立线程负责将这些记录批次发送到相应 Broker 上。
-
-- **批次，就是一组消息，这些消息属于同一个主题和分区**。
-- 发送时，会把消息分成批次传输，如果每一个消息发送一次，会导致大量的网路开销。
-
-（4）**响应** - 服务器收到消息会返回一个响应。
-
-- 如果**成功**，则返回一个 `RecordMetaData` 对象，它包含了主题、分区、偏移量；
-- 如果**失败**，则返回一个错误。生产者在收到错误后，可以进行重试，重试次数可以在配置中指定。失败一定次数后，就返回错误消息。
-
-![img](http://dunwu.test.upcdn.net/snap/20200528224323.png)
-
-生产者在向 broker 发送消息时是怎么确定向哪一个 broker 发送消息？
-
-- 生产者会向任意 broker 发送一个元数据请求（`MetadataRequest`），获取到每一个分区对应的 leader 信息，并缓存到本地。
-- 生产者在发送消息时，会指定 Partition 或者通过 key 得到到一个 Partition，然后根据 Partition 从缓存中获取相应的 leader 信息。
-
-![img](http://dunwu.test.upcdn.net/snap/20200621113043.png)
-
-## 二、发送方式
-
-Kafka 生产者核心配置：
-
-- `bootstrap.servers` - broker 地址清单。
-- `key.serializer` - 键的序列化器。
-- `value.serializer` - 值的序列化器。
-
-### 异步发送
-
-直接发送消息，不关心消息是否到达。
-
-这种方式吞吐量最高，但有小概率会丢失消息。
-
-【示例】发送并忘记
-
-```java
-ProducerRecord<String, String> record =
-            new ProducerRecord<>("CustomerCountry", "Precision Products", "France");
-try {
-    producer.send(record);
-} catch (Exception e) {
-    e.printStackTrace();
-}
-```
-
-### 同步发送
-
-返回一个 `Future` 对象，调用 `get()` 方法，会一直阻塞等待 `Broker` 返回结果。
-
-这是一种可靠传输方式，但吞吐量最差。
-
-【示例】同步发送
-
-```java
-ProducerRecord<String, String> record =
-            new ProducerRecord<>("CustomerCountry", "Precision Products", "France");
-try {
-    producer.send(record).get();
-} catch (Exception e) {
-    e.printStackTrace();
-}
-```
-
-### 异步响应发送
-
-代码如下，异步方式相对于“发送并忽略返回”的方式的不同在于：在异步返回时可以执行一些操作，如：抛出异常、记录错误日志。
-
-这是一个折中的方案，即兼顾吞吐量，也保证消息不丢失。
-
-【示例】异步发送
-
-首先，定义一个 callback：
-
-```java
-private class DemoProducerCallback implements Callback {
-      @Override
-        public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-           if (e != null) {
-               e.printStackTrace();
-             }
-        }
-}
-```
-
-然后，使用这个 callback：
-
-```java
-ProducerRecord<String, String> record =
-            new ProducerRecord<>("CustomerCountry", "Biomedical Materials", "USA");
-producer.send(record, new DemoProducerCallback());
-```
-
-## 三、序列化
-
-Kafka 内置了常用 Java 基础类型的序列化器，如：`StringSerializer`、`IntegerSerializer`、`DoubleSerializer` 等。
-
-但如果要传输较为复杂的对象，推荐使用序列化性能更高的工具，如：Avro、Thrift、Protobuf 等。
-
-使用方式是通过实现 `org.apache.kafka.common.serialization.Serializer` 接口来引入自定义的序列化器。
-
-## 四、分区
-
-前文中已经提到，Kafka 生产者发送消息使用的对象 `ProducerRecord` ，可以选填 Partition 和 Key。
-
-- 如果 `ProducerRecord` 指定了 Partition，则分区器什么也不做，否则分区器会选择一个分区。
-- 如果传入的是 key，则通过分区器选择一个分区来保存这个消息；
-- 如果 key 和 Partition 都没有指定，则会默认生成一个 key。
-
-当指定这两个参数时，意味着：**会将特定的 key 发送给指定分区**。
-
-> 说明：某些场景下，可能会要求按序发送消息。
->
-> Kafka 的 Topic 如果是单分区，自然是有序的。但是，Kafka 是基于分区实现其高并发性的，如果使用单 partition，会严重降低 Kafka 的吞吐量。所以，这不是一个合理的方案。
->
-> 还有一种方案是：生产者将同一个 key 的消息发送给指定分区，这可以保证同一个 key 在这个分区中是有序的。然后，消费者为每个 key 设定一个缓存队列，然后让一个独立线程负责消费指定 key 的队列，这就保证了消费消息也是有序的。
-
-## 五、幂等性
+### 1.2. Kafka Producer 的幂等性
 
 在 Kafka 中，Producer **默认不是幂等性的**，但我们可以创建幂等性 Producer。它其实是 0.11.0.0 版本引入的新功能。在此之前，Kafka 向分区发送数据时，可能会出现同一条消息被发送了多次，导致消息重复的情况。在 0.11 之后，指定 Producer 幂等性的方法很简单，仅需要设置一个参数即可，即 `props.put(“enable.idempotence”, ture)`，或 `props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG， true)`。
 
@@ -187,7 +37,7 @@ Kafka 内置了常用 Java 基础类型的序列化器，如：`StringSerializer
 
 如果想实现多分区以及多会话上的消息无重复，应该怎么做呢？答案就是事务（transaction）或者依赖事务型 Producer。这也是幂等性 Producer 和事务型 Producer 的最大区别！
 
-### PID 和 Sequence Number
+### 1.3. PID 和 Sequence Number
 
 为了实现 Producer 的幂等性，Kafka 引入了 Producer ID（即 PID）和 Sequence Number。
 
@@ -201,7 +51,7 @@ Broker 端在缓存中保存了这 seq number，对于接收的每条消息，�
 
 ![img](http://www.heartthinkdo.com/wp-content/uploads/2018/05/2.png)
 
-### 生成 PID 的流程
+### 1.4. 生成 PID 的流程
 
 在执行创建事务时，如下：
 
@@ -227,7 +77,7 @@ void run(long now) {
                    ........
 ```
 
-### 幂等性的应用实例
+### 1.5. 幂等性的应用实例
 
 （1）配置属性
 
@@ -238,7 +88,7 @@ void run(long now) {
 ```java
 // 指定生产者的配置
 final Properties properties = new Properties();
-properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+properties.put("bootstrap.servers", "localhost:9092");
 // 设置 key 的序列化器
 properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 // 设置 value 的序列化器
@@ -286,17 +136,19 @@ Exception in thread “main” java.lang.IllegalStateException: Transactional me
     at org.apache.kafka.clients.producer.KafkaProducer.initTransactions(KafkaProducer.java:544)
 ```
 
-## 六、事务
+## 2. Kafka 事务
 
-**Kafka 事务属性是指一系列的生产者生产消息和消费者提交偏移量的操作在一个事务，或者说是是一个原子操作），同时成功或者失败**。
+**Kafka 的事务概念是指一系列的生产者生产消息和消费者提交偏移量的操作在一个事务，或者说是是一个原子操作），同时成功或者失败**。
 
-Kafka 自 0.11 版本开始提供了对事务的支持，目前主要是在 read committed 隔离级别上做事情。它能保证多条消息原子性地写入到目标分区，同时也能保证 Consumer 只能看到事务成功提交的消息。
+### 2.1. 事务
+
+Kafka 自 0.11 版本开始提供了对事务的支持，目前主要是在 read committed 隔离级别上做事情。它能**保证多条消息原子性地写入到目标分区，同时也能保证 Consumer 只能看到事务成功提交的消息**。
+
+### 2.2. 事务型 Producer
 
 事务型 Producer 能够保证将消息原子性地写入到多个分区中。这批消息要么全部写入成功，要么全部失败。另外，事务型 Producer 也不惧进程的重启。Producer 重启回来后，Kafka 依然保证它们发送消息的精确一次处理。
 
 **事务属性实现前提是幂等性**，即在配置事务属性 `transaction.id` 时，必须还得配置幂等性；但是幂等性是可以独立使用的，不需要依赖事务属性。
-
-### 引入事务目的
 
 在事务属性之前先引入了生产者幂等性，它的作用为：
 
@@ -305,7 +157,7 @@ Kafka 自 0.11 版本开始提供了对事务的支持，目前主要是在 read
 
 **消费者提交偏移量导致重复消费消息的场景**：消费者在消费消息完成提交便宜量 o2 之前挂掉了（假设它最近提交的偏移量是 o1），此时执行再均衡时，其它消费者会重复消费消息(o1 到 o2 之间的消息）。
 
-### 事务操作的 API
+### 2.3. 事务操作的 API
 
 `Producer` 提供了 `initTransactions`, `beginTransaction`, `sendOffsets`, `commitTransaction`, `abortTransaction` 五个事务方法。
 
@@ -347,7 +199,7 @@ Kafka 自 0.11 版本开始提供了对事务的支持，目前主要是在 read
     public void abortTransaction() throws ProducerFencedException ;
 ```
 
-### Kafka 事务相关配置
+### 2.4. Kafka 事务相关配置
 
 使用 kafka 的事务 api 时的一些注意事项：
 
@@ -358,7 +210,7 @@ Kafka 自 0.11 版本开始提供了对事务的支持，目前主要是在 read
   - `read_uncommitted`：这是默认值，表明 Consumer 能够读取到 Kafka 写入的任何消息，不论事务型 Producer 提交事务还是终止事务，其写入的消息都可以读取。很显然，如果你用了事务型 Producer，那么对应的 Consumer 就不要使用这个值。
   - `read_committed`：表明 Consumer 只会读取事务型 Producer 成功提交事务写入的消息。当然了，它也能看到非事务型 Producer 写入的所有消息。
 
-### Kafka 事务应用示例
+### 2.5. Kafka 事务应用示例
 
 #### 只有生成操作
 
@@ -597,68 +449,13 @@ public void onlyConsumeInTransaction() {
 }
 ```
 
-## 七、压缩
-
-### Kafka 消息格式
-
-目前 Kafka 共有两大类消息格式，社区分别称之为 V1 版本和 V2 版本。V2 版本是 Kafka 0.11.0.0 中正式引入的。
-
-不论是哪个版本，Kafka 的消息层次都分为两层：消息集合（message set）以及消息（message）。一个消息集合中包含若干条日志项（record item），而日志项才是真正封装消息的地方。Kafka 底层的消息日志由一系列消息集合日志项组成。Kafka 通常不会直接操作具体的一条条消息，它总是在消息集合这个层面上进行写入操作。
-
-那么社区引入 V2 版本的目的是什么呢？V2 版本主要是针对 V1 版本的一些弊端做了修正。
-
-原来在 V1 版本中，每条消息都需要执行 CRC 校验，但有些情况下消息的 CRC 值是会发生变化的。比如在 Broker 端可能会对消息时间戳字段进行更新，那么重新计算之后的 CRC 值也会相应更新；再比如 Broker 端在执行消息格式转换时（主要是为了兼容老版本客户端程序），也会带来 CRC 值的变化。鉴于这些情况，再对每条消息都执行 CRC 校验就有点没必要了，不仅浪费空间还耽误 CPU 时间，因此在 V2 版本中，消息的 CRC 校验工作就被移到了消息集合这一层。
-
-V2 版本还有一个和压缩息息相关的改进，就是保存压缩消息的方法发生了变化。之前 V1 版本中保存压缩消息的方法是把多条消息进行压缩然后保存到外层消息的消息体字段中；而 V2 版本的做法是对整个消息集合进行压缩。显然后者应该比前者有更好的压缩效果。
-
-### Kafka 如何压缩
-
-在 Kafka 中，压缩可能发生在两个地方：生产者端和 Broker 端。
-
-生产者程序中配置 `compression.type` 参数即表示启用指定类型的压缩算法。
-
-【示例】开启 GZIP 的 Producer 对象
-
-```java
-Properties props = new Properties();
-props.put("bootstrap.servers", "localhost:9092");
-props.put("acks", "all");
-props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-// 开启 GZIP 压缩
-props.put("compression.type", "gzip");
-
-Producer<String, String> producer = new KafkaProducer<>(props);
-```
-
-其实大部分情况下 Broker 从 Producer 端接收到消息后仅仅是原封不动地保存而不会对其进行任何修改，但这里的“大部分情况”也是要满足一定条件的。有两种例外情况就可能让 Broker 重新压缩消息。
-
-情况一：Broker 端指定了和 Producer 端不同的压缩算法。
-
-情况二：Broker 端发生了消息格式转换。
-
-所谓的消息格式转换主要是为了兼容老版本的消费者程序。在一个生产环境中，Kafka 集群中同时保存多种版本的消息格式非常常见。为了兼容老版本的格式，Broker 端会对新版本消息执行向老版本格式的转换。这个过程中会涉及消息的解压缩和重新压缩。一般情况下这种消息格式转换对性能是有很大影响的，除了这里的压缩之外，它还让 Kafka 丧失了引以为豪的 Zero Copy 特性。
-
-### 何时解压缩
-
-通常来说解压缩发生在消费者程序中，也就是说 Producer 发送压缩消息到 Broker 后，Broker 照单全收并原样保存起来。当 Consumer 程序请求这部分消息时，Broker 依然原样发送出去，当消息到达 Consumer 端后，由 Consumer 自行解压缩还原成之前的消息。
-
-那么现在问题来了，Consumer 怎么知道这些消息是用何种压缩算法压缩的呢？其实答案就在消息中。Kafka 会将启用了哪种压缩算法封装进消息集合中，这样当 Consumer 读取到消息集合时，它自然就知道了这些消息使用的是哪种压缩算法。如果用一句话总结一下压缩和解压缩，那么我希望你记住这句话：**Producer 端压缩、Broker 端保持、Consumer 端解压缩。**
-
-### 压缩算法
-
-在 Kafka 2.1.0 版本之前，Kafka 支持 3 种压缩算法：GZIP、Snappy 和 LZ4。从 2.1.0 开始，Kafka 正式支持 Zstandard 算法（简写为 zstd）。
-
-在实际使用中，GZIP、Snappy、LZ4 甚至是 zstd 的表现各有千秋。但对于 Kafka 而言，它们的性能测试结果却出奇得一致，即在吞吐量方面：LZ4 > Snappy > zstd 和 GZIP；而在压缩比方面，zstd > LZ4 > GZIP > Snappy。
-
-如果客户端机器 CPU 资源有很多富余，**强烈建议开启 zstd 压缩，这样能极大地节省网络资源消耗**。
-
-## 参考资料
+## 3. 参考资料
 
 - **官方**
-  - [Kakfa 官网](http://kafka.apache.org/)
-  - [Kakfa Github](https://github.com/apache/kafka)
-  - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+  - [Kafka 官网](http://kafka.apache.org/)
+  - [Kafka Github](https://github.com/apache/kafka)
+  - [Kafka 官方文档](https://kafka.apache.org/documentation/)
+  - [Confluent Kafka 教程](https://kafka-tutorials.confluent.io/)
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**

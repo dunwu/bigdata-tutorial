@@ -6,23 +6,34 @@
 
 ## 📖 内容
 
-- [Kafka 应用指南](kafka-quickstart.md)
-- [Kafka 生产者](kafka-producer.md)
-- [Kafka 消费者](kafka-consumer.md)
-- [Kafka 可靠的数据传递](kafka-reliable-transmission.md)
-- [Kafka 分区再均衡](kafka-rebalance.md)
-- [Kafka 集群](kafka-cluster.md)
-- [Kafka 流式处理](kafka-stream.md)
-- [Kafka 运维指南](kafka-ops.md)
+### [Kafka 快速入门](Kafka快速入门.md)
+
+### [Kafka 生产者](Kafka生产者.md)
+
+### [Kafka 消费者](Kafka消费者.md)
+
+### [Kafka 集群](Kafka集群.md)
+
+### [Kafka 可靠传输](Kafka可靠传输.md)
+
+### [Kafka 物理存储](Kafka物理存储.md)
+
+### [Kafka 流式处理](Kafka流式处理.md)
+
+### [Kafka 运维](Kafka运维.md)
 
 ## 📚 资料
 
 - **官方**
-  - [Kakfa 官网](http://kafka.apache.org/)
-  - [Kakfa Github](https://github.com/apache/kafka)
-  - [Kakfa 官方文档](https://kafka.apache.org/documentation/)
+  - [Kafka 官网](http://kafka.apache.org/)
+  - [Kafka Github](https://github.com/apache/kafka)
+  - [Kafka 官方文档](https://kafka.apache.org/documentation/)
+  - [Confluent 官网](http://kafka.apache.org/)
+  - [Kafka Jira](https://issues.apache.org/jira/projects/KAFKA?selectedItem=com.atlassian.jira.jira-projects-plugin:components-page)
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
+  - [《深入理解 Kafka：核心设计与实践原理》](https://item.jd.com/12489649.html)
+  - [《Kafka 技术内幕》](https://item.jd.com/12234113.html)
 - **教程**
   - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
   - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
