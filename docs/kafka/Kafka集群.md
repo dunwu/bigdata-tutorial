@@ -78,7 +78,7 @@
 
 分区重分配主要是指，**kafka-reassign-partitions 脚本**（关于这个脚本，后面我也会介绍）提供的对已有 Topic 分区进行细粒度的分配功能。这部分功能也是控制器实现的。
 
-#### 领导者选举
+#### 选举 Leader
 
 Preferred 领导者选举主要是 Kafka 为了避免部分 Broker 负载过重而提供的一种换 Leader 的方案。在专栏后面说到工具的时候，我们再详谈 Preferred 领导者选举，这里你只需要了解这也是控制器的职责范围就可以了。
 
@@ -123,7 +123,8 @@ Kafka 使用 Topic 来组织数据，每个 Topic 被分为若干个 Partition�
 Kafka 副本有两种角色：
 
 - **Leader 副本（主）**：每个 Partition 都有且仅有一个 Leader 副本。**Leader 处理一切对 Partition （分区）的读写请求**；
-- **Follower 副本（从）**：Leader 副本以外的副本都是 Follower 副本。**Follower 唯一的任务就是从 Leader 那里复制消息，保持与 Leader 一致的状态**。如果 Leader 宕机，其中一个 Follower 会被选举为新的 Leader。
+- **Follower 副本（从）**：Leader 副本以外的副本都是 Follower 副本。**Follower 唯一的任务就是从 Leader 那里复制消息，保持与 Leader 一致的状态**。
+- 如果 Leader 宕机，其中一个 Follower 会被选举为新的 Leader。
 
 ![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210407191337.png)
 
@@ -214,6 +215,22 @@ Leader 处理拉取请求和处理生产请求的方式很相似：
 我们讨论了 Kafka 中最常见的三种请求类型：元信息请求，生产请求和拉取请求。这些请求都是使用的是 Kafka 的自定义二进制协议。集群中 Broker 间的通信请求也是使用同样的协议，这些请求是内部使用的，客户端不能发送。比如在选举 Partition Leader 过程中，控制器会发送 LeaderAndIsr 请求给新的 Leader 和其他跟随副本。
 
 这个协议目前已经支持 20 种请求类型，并且仍然在演进以支持更多的类型。
+
+## 总结
+
+### 副本机制
+
+- 每个 Partition 都有一个 Leader，零个或多个 Follower。
+- Leader 处理一切对 Partition （分区）的读写请求；而 Follower 只需被动的同步 Leader 上的数据。
+- 同一个 Topic 的不同 Partition 会分布在多个 Broker 上，而且一个 Partition 还会在其他的 Broker 上面进行备份。
+
+### 选举机制
+
+Follower 宕机，啥事儿没有；Leader 宕机了，会从 Follower 中重新选举一个新的 Leader。
+生产者/消费者如何知道谁是 Leader
+
+- Kafka 将这种元数据存储在 Zookeeper 服务中。
+- 生产者和消费者都和 Zookeeper 连接并通信。
 
 ## 7. 参考资料
 

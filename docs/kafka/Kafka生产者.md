@@ -250,7 +250,7 @@ Kafka 的数据结构采用三级结构，即：主题（Topic）、分区（Par
 **如果 `ProducerRecord` 指定了 Partition，则分区器什么也不做**，否则分区器会根据 key 选择一个 Partition 。
 
 - 没有 key 时的分发逻辑：每隔 `topic.metadata.refresh.interval.ms` 的时间，随机选择一个 partition。这个时间窗口内的所有记录发送到这个 partition。发送数据出错后会重新选择一个 partition。
-- 根据 key 分发：对 key 求 hash，然后对 partition 数量求模。这里的关键点在于：同一个 key 总是被映射到同一个 Partition 上，所以在进行映射时，Kafka 会使用 Topic 的所有 Partition ，而不仅仅是可用的 Partition。这意味着，如果写入数据的 Partition 是不可用的，那么就会出错。
+- 根据 key 分发：Kafka 的选择分区策略是：根据 key 求 hash 值，然后将 hash 值对 partition 数量求模。这里的关键点在于，**同一个 key 总是被映射到同一个 Partition 上**。所以，在选择分区时，Kafka 会使用 Topic 的所有 Partition ，而不仅仅是可用的 Partition。这意味着，**如果写入数据的 Partition 是不可用的，那么就会出错**。
 
 ### 5.4. 自定义分区策略
 

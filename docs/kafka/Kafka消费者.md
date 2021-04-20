@@ -43,7 +43,7 @@ Kafka 消费者（Consumer）以 **pull 方式**从 Broker 拉取消息，Consum
 
 每个 Consumer 的唯一元数据是该 Consumer 在日志中消费的位置。这个偏移量是由 Consumer 控制的：Consumer 通常会在读取记录时线性的增加其偏移量。但实际上，由于位置由 Consumer 控制，所以 Consumer 可以采用任何顺序来消费记录。
 
-**一个消息只有在所有跟随者节点都进行了同步，才会被消费者获取到**。如下图，只能消费 Message0、Message1、Message2：
+**一条消息只有被提交，才会被消费者获取到**。如下图，只能消费 Message0、Message1、Message2：
 
 ![img](http://dunwu.test.upcdn.net/snap/20200621113917.png)
 
@@ -61,7 +61,7 @@ Kafka 消费者从属于消费者群组，**一个群组里的 Consumer 订阅�
 
 ![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210408194235.png)
 
-**消费者群组之间互不影响**。
+**不同消费者群组之间互不影响**。
 
 ![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210408194839.png)
 
@@ -329,13 +329,9 @@ try {
 
 分区的所有权从一个消费者转移到另一个消费者，这样的行为被称为**分区再均衡（Rebalance）**。**Rebalance 实现了消费者群组的高可用性和伸缩性**。
 
-当消费者要加入群组时，会向群组协调器发送一个 JoinGroup 请求。第一个加入群组的消费者将成为“群主”。群主从协调器那里获取群组的活跃成员列表，并负责给每一个消费者分配分区。消费者通过向被指派为群组协调器（Coordinator）的 Broker 定期发送心跳来维持它们和群组的从属关系以及它们对分区的所有权。
-
-所谓协调者，在 Kafka 中对应的术语是 Coordinator，它专门为 Consumer Group 服务，负责为 Group 执行 Rebalance 以及提供位移管理和组成员管理等。具体来讲，Consumer 端应用程序在提交位移时，其实是向 Coordinator 所在的 Broker 提交位移。同样地，当 Consumer 应用启动时，也是向 Coordinator 所在的 Broker 发送各种请求，然后由 Coordinator 负责执行消费者组的注册、成员管理记录等元数据管理操作。
+**Rebalance 本质上是一种协议，规定了一个 Consumer Group 下的所有 Consumer 如何达成一致，来分配订阅 Topic 的每个分区**。比如某个 Group 下有 20 个 Consumer 实例，它订阅了一个具有 100 个分区的 Topic。正常情况下，Kafka 平均会为每个 Consumer 分配 5 个分区。这个分配的过程就叫 Rebalance。
 
 当在群组里面 新增/移除消费者 或者 新增/移除 kafka 集群 broker 节点 时，群组协调器 Broker 会触发再均衡，重新为每一个 Partition 分配消费者。**Rebalance 期间，消费者无法读取消息，造成整个消费者群组一小段时间的不可用。**
-
-**Rebalance 本质上是一种协议，规定了一个 Consumer Group 下的所有 Consumer 如何达成一致，来分配订阅 Topic 的每个分区**。比如某个 Group 下有 20 个 Consumer 实例，它订阅了一个具有 100 个分区的 Topic。正常情况下，Kafka 平均会为每个 Consumer 分配 5 个分区。这个分配的过程就叫 Rebalance。
 
 ### 3.2. 何时生分区再均衡
 
@@ -351,18 +347,26 @@ try {
 
 ### 3.3. 分区再均衡的过程
 
-**Rebalance 是通过消费者群组中的称为“群主”消费者客户端进行的**。什么是群主呢？“群主”就是第一个加入群组的消费者。消费者第一次加入群组时，它会向群组协调器发送一个 JoinGroup 的请求，如果是第一个，则此消费者被指定为“群主”。
+**Rebalance 是通过消费者群组中的称为“群主”消费者客户端进行的**。
 
-![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210413164132.png)
+（1）选择群主
 
-群主从群组协调器获取群组成员列表，然后给每一个消费者进行分配分区 Partition。有两种分配策略：Range 和 RoundRobin。
+当消费者要加入群组时，会向群组协调器发送一个 JoinGroup 请求。第一个加入群组的消费者将成为“群主”。**群主从协调器那里获取群组的活跃成员列表，并负责给每一个消费者分配分区**。
+
+> 所谓协调者，在 Kafka 中对应的术语是 Coordinator，它专门为 Consumer Group 服务，负责为 Group 执行 Rebalance 以及提供位移管理和组成员管理等。具体来讲，Consumer 端应用程序在提交位移时，其实是向 Coordinator 所在的 Broker 提交位移。同样地，当 Consumer 应用启动时，也是向 Coordinator 所在的 Broker 发送各种请求，然后由 Coordinator 负责执行消费者组的注册、成员管理记录等元数据管理操作。
+
+（2）消费者通过向被指派为群组协调器（Coordinator）的 Broker 定期发送心跳来维持它们和群组的从属关系以及它们对分区的所有权。
+
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210415160730.png)
+
+（3）群主从群组协调器获取群组成员列表，然后给每一个消费者进行分配分区 Partition。有两种分配策略：Range 和 RoundRobin。
 
 - **Range 策略**，就是把若干个连续的分区分配给消费者，如存在分区 1-5，假设有 3 个消费者，则消费者 1 负责分区 1-2,消费者 2 负责分区 3-4，消费者 3 负责分区 5。
 - **RoundRoin 策略**，就是把所有分区逐个分给消费者，如存在分区 1-5，假设有 3 个消费者，则分区 1->消费 1，分区 2->消费者 2，分区 3>消费者 3，分区 4>消费者 1，分区 5->消费者 2。
 
-群主分配完成之后，把分配情况发送给群组协调器。
+（4）群主分配完成之后，把分配情况发送给群组协调器。
 
-群组协调器再把这些信息发送给消费者。**每个消费者只能看到自己的分配信息，只有群主知道所有消费者的分配信息**。
+（5）群组协调器再把这些信息发送给消费者。**每个消费者只能看到自己的分配信息，只有群主知道所有消费者的分配信息**。
 
 ### 3.4. 如何判定消费者已经死亡
 

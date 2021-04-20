@@ -567,3 +567,4 @@ class Outer {
 ## 16. 参考资料
 
 - [Scala 官网](https://www.scala-lang.org/)
+- [Scala 菜鸟教程](https://www.runoob.com/scala/scala-tutorial.html)
