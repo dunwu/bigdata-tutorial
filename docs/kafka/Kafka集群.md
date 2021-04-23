@@ -4,7 +4,7 @@
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
-- [1. 集群成员关系](#1-集群成员关系)
+- [1. Kafka 和 ZooKeeper](#1-kafka-和-zookeeper)
 - [2. 控制器](#2-控制器)
   - [2.1. 如何选举控制器](#21-如何选举控制器)
   - [2.2. 控制器的作用](#22-控制器的作用)
@@ -18,24 +18,32 @@
   - [5.2. 生产请求](#52-生产请求)
   - [5.3. 消费请求](#53-消费请求)
   - [5.4. 其他请求](#54-其他请求)
-- [6. 物理存储](#6-物理存储)
-  - [6.1. Partition 分配](#61-partition-分配)
-  - [6.2. 文件管理](#62-文件管理)
-  - [6.3. 文件格式](#63-文件格式)
-  - [6.4. 索引](#64-索引)
-  - [6.5. 清理](#65-清理)
-  - [6.6. 删除事件](#66-删除事件)
+- [6. 总结](#6-总结)
+  - [6.1. 副本机制](#61-副本机制)
+  - [6.2. 选举机制](#62-选举机制)
 - [7. 参考资料](#7-参考资料)
 
 <!-- /TOC -->
 
-## 1. 集群成员关系
+## 1. Kafka 和 ZooKeeper
 
 **Kafka 使用 Zookeeper 来维护集群成员的信息**。每个 Broker 都有一个唯一标识符，这个标识符可以在配置文件里指定，也可以自动生成。在 Broker 启动的时候，它通过创建**临时节点**把自己的 ID 注册到 Zookeeper。Kafka 组件订阅 Zookeeper 的 `/broker/ids` 路径，当有 Broker 加入集群或退出集群时，这些组件就可以获得通知。
 
 如果要启动另一个具有相同 ID 的 Broker，会得到一个错误——新 Broker 会试着进行注册，但不会成功，因为 ZooKeeper 中已经有一个具有相同 ID 的 Broker。
 
 在 Broker 停机、出现网络分区或长时间垃圾回收停顿时，Broker 会与 ZooKeeper 断开连接，此时 Broker 在启动时创建的临时节点会自动被 ZooKeeper 移除。监听 Broker 列表的 Kafka 组件会被告知 Broker 已移除。
+
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210423171607.png)
+
+Kafka 在 ZooKeeper 的关键存储信息：
+
+- `admin`：存储管理信息。主要为删除主题事件，分区迁移事件，优先副本选举，信息 (一般为临时节点)
+- `brokers`：存储 Broker 相关信息。broker 节点以及节点上的主题相关信息
+- `cluster`：存储 kafka 集群信息
+- `config`：存储 broker，client，topic，user 以及 changer 相关的配置信息
+- `consumers`：存储消费者相关信息
+- `controller`：存储控制器节点信息
+- `controller_epoch`：存储控制器节点当前的年龄（说明控制器节点变更次数）
 
 > ZooKeeper 两个重要特性：
 >
@@ -216,15 +224,15 @@ Leader 处理拉取请求和处理生产请求的方式很相似：
 
 这个协议目前已经支持 20 种请求类型，并且仍然在演进以支持更多的类型。
 
-## 总结
+## 6. 总结
 
-### 副本机制
+### 6.1. 副本机制
 
 - 每个 Partition 都有一个 Leader，零个或多个 Follower。
 - Leader 处理一切对 Partition （分区）的读写请求；而 Follower 只需被动的同步 Leader 上的数据。
 - 同一个 Topic 的不同 Partition 会分布在多个 Broker 上，而且一个 Partition 还会在其他的 Broker 上面进行备份。
 
-### 选举机制
+### 6.2. 选举机制
 
 Follower 宕机，啥事儿没有；Leader 宕机了，会从 Follower 中重新选举一个新的 Leader。
 生产者/消费者如何知道谁是 Leader

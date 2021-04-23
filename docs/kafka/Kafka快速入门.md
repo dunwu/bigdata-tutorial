@@ -1,8 +1,6 @@
 # Kafka 快速入门
 
-> Kafka 是 Apache 的开源项目。**Kafka 既可以作为一个消息队列中间件，也可以作为一个分布式流处理平台**。
->
-> **Kafka 用于构建实时数据管道和流应用。它具有水平可伸缩性，容错性，快速快速性**。
+> **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台**。
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
@@ -12,6 +10,8 @@
   - [1.3. Kafka 适用场景](#13-kafka-适用场景)
   - [1.4. Kafka 术语](#14-kafka-术语)
   - [1.5. Kafka 基本工作流程](#15-kafka-基本工作流程)
+  - [1.6. Kafka 发行版本](#16-kafka-发行版本)
+  - [1.7. Kafka 重大版本](#17-kafka-重大版本)
 - [2. Kafka 服务端使用入门](#2-kafka-服务端使用入门)
   - [2.1. 步骤一、获取 Kafka](#21-步骤一获取-kafka)
   - [2.2. 步骤二、启动 Kafka 环境](#22-步骤二启动-kafka-环境)
@@ -32,7 +32,7 @@
 
 ## 1. Kafka 简介
 
-Kafka 是一个消息队列中间件，也是一个分布式流处理平台。
+> **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台**。
 
 ![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210407151324.png)
 
@@ -65,8 +65,8 @@ Kafka 允许您将大量消息通过集中介质存储并存储，而不用担�
 
 - 消息：Record。Kafka 是消息引擎嘛，这里的消息就是指 Kafka 处理的主要对象。
 - **Broker** - Kafka 集群包含一个或多个节点，这种节点被称为 Broker。
-- **Topic**：Topic 是承载消息的逻辑容器，在实际使用中多用来区分具体的业务。不同 Topic 的消息是物理隔离的；同一个 Topic 的消息保存在一个或多个 Broker 上，但用户只需指定消息的 Topic 即可生产或消费数据而不必关心数据存于何处。对于每一个 Topic， Kafka 集群都会维持一个分区日志。
-- **Partition**：分区。一个有序不变的消息序列。为了提高 Kafka 的吞吐率，每个 Topic 包含一个或多个 Partition，每个 Partition 在物理上对应一个文件夹，该文件夹下存储这个 Partition 的所有消息和索引文件。Kafka 日志的 Partition 分布在 Kafka 集群的节点上。每个节点在处理数据和请求时，共享这些 Partition。每一个 Partition 都会在已配置的节点上进行备份，确保容错性。
+- **Topic**：主题。Topic 是承载消息的逻辑容器，在实际使用中多用来区分具体的业务。不同 Topic 的消息是物理隔离的；同一个 Topic 的消息保存在一个或多个 Broker 上，但用户只需指定消息的 Topic 即可生产或消费数据而不必关心数据存于何处。对于每一个 Topic， Kafka 集群都会维持一个分区日志。
+- **Partition**：分区。Partition 是一个有序不变的消息序列。为了提高 Kafka 的吞吐率，每个 Topic 包含一个或多个 Partition，每个 Partition 在物理上对应一个文件夹，该文件夹下存储这个 Partition 的所有消息和索引文件。Kafka 日志的 Partition 分布在 Kafka 集群的节点上。每个节点在处理数据和请求时，共享这些 Partition。每一个 Partition 都会在已配置的节点上进行备份，确保容错性。
 - **Offset**：消息偏移量。表示分区中每条消息的位置信息，是一个单调递增且不变的值。
 - **Replica**：副本。Kafka 中同一条消息能够被拷贝到多个地方以提供数据冗余，这些地方就是所谓的副本。副本还分为领导者副本和追随者副本，各自有不同的角色划分。副本是在分区层级下的，即每个分区可配置多个副本实现高可用。
 - **Producer**：生产者。向主题发布新消息的应用程序。Producer 可以将数据发布到所选择的 Topic 中。Producer 负责将记录分配到 Topic 中的哪一个 Partition 中。
@@ -74,7 +74,6 @@ Kafka 允许您将大量消息通过集中介质存储并存储，而不用担�
   - 如果所有的 Consumer 在同一 Consumer Group 中，消息记录会负载平衡到每一个 Consumer。
   - 如果所有的 Consumer 在不同的 Consumer Group 中，每条消息记录会广播到所有的 Consumer。
 - **Consumer Group**：消费者组。多个 Consumer 实例共同组成的一个组，同时消费多个分区以实现高吞吐。每个 Consumer 属于一个特定的 Consumer Group（可以为每个 Consumer 指定 group name，若不指定 Group 则属于默认的 Group）。**在同一个 Group 中，每一个 Consumer 可以消费多个 Partition，但是一个 Partition 只能指定给一个这个 Group 中一个 Consumer**。
-- **Consumer Offset**：消费者位移。表征消费者消费进度，每个消费者都有自己的消费者位移。
 - **Rebalance**：再均衡。 消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。
 
 ![img](http://kafka.apachecn.org/10/images/consumer-groups.png)
@@ -103,6 +102,34 @@ Topic 就是数据主题，是数据记录发布的地方，可以用来区分�
 - 其次，它可以作为并行的单位。
 
 ![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-producer-consumer.png)
+
+### 1.6. Kafka 发行版本
+
+Kafka 主要有以下发行版本：
+
+- **Apache Kafka**：也称社区版 Kafka。优势在于迭代速度快，社区响应度高，使用它可以让你有更高的把控度；缺陷在于仅提供基础核心组件，缺失一些高级的特性。
+- **Confluent Kafka**：Confluent 公司提供的 Kafka。优势在于集成了很多高级特性且由 Kafka 原班人马打造，质量上有保证；缺陷在于相关文档资料不全，普及率较低，没有太多可供参考的范例。
+- **CDH/HDP Kafka**：大数据云公司提供的 Kafka，内嵌 Apache Kafka。优势在于操作简单，节省运维成本；缺陷在于把控度低，演进速度较慢。
+
+### 1.7. Kafka 重大版本
+
+- 0.8
+  - 正式引入了副本机制
+  - 至少升级到 0.8.2.2
+- 0.9
+  - 增加了基础的安全认证 / 权限功能
+  - 新版本 Producer API 在这个版本中算比较稳定
+- 0.10
+  - 引入了 Kafka Streams
+  - 至少升级到 0.10.2.2
+  - 修复了一个可能导致 Producer 性能降低的 Bug
+  - 使用新版本 Consumer API
+- 0.11
+  - 提供幂等性 Producer API 以及事务
+  - 对 Kafka 消息格式做了重构
+  - 至少升级到 0.11.0.3
+- 1.0 和 2.0
+  - Kafka Streams 的改进
 
 ## 2. Kafka 服务端使用入门
 
@@ -255,7 +282,7 @@ Kafka 有 4 个核心 API
 - [Consumer API](https://kafka.apache.org/documentation.html#consumerapi) - 允许一个应用程序订阅一个或多个 Kafka Topic，并且对发布给他们的流式数据进行处理。
 - [Streams API](https://kafka.apache.org/documentation/streams) - 允许一个应用程序作为一个流处理器，消费一个或者多个 Kafka Topic 产生的输入流，然后生产一个输出流到一个或多个 Kafka Topic 中去，在输入输出流中进行有效的转换。
 - [Connector API](https://kafka.apache.org/documentation.html#connect) - 允许构建并运行可重用的生产者或者消费者，将 Kafka Topic 连接到已存在的应用程序或数据库。例如，连接到一个关系型数据库，捕捉表的所有变更内容。
-- Admin API - 支持管理和检查 Topic，Broker，ACL 和其他 Kafka 对象。
+- [Admin API](https://kafka.apache.org/documentation/#adminapi) - 支持管理和检查 Topic，Broker，ACL 和其他 Kafka 对象。
 
 ### 3.3. 发送消息
 
@@ -426,13 +453,13 @@ public Consumer buildCustomer() {
 - 消费者分组模式。通过订阅主题方式时，消费者必须加入到消费者群组中，即消费者必须有一个自己的分组；
 - 独立消费者模式。这种模式就是消费者是独立的不属于任何消费者分组，自己指定消费那些 `Partition`。
 
-1、订阅主题方式
+（1）订阅主题方式
 
 ```java
 consumer.subscribe(Arrays.asList(topic));
 ```
 
-2、独立消费者模式
+（2）独立消费者模式
 
 通过 consumer 的 `assign(Collection<TopicPartition> partitions)` 方法来为消费者指定分区。
 
