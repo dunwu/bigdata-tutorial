@@ -1,17 +1,15 @@
 # Kafka 快速入门
 
-> **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台**。
+> **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台，此外，还可以作为数据存储**。
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
 - [1. Kafka 简介](#1-kafka-简介)
-  - [1.1. Kafka 的特性](#11-kafka-的特性)
-  - [1.2. Kafka 核心功能](#12-kafka-核心功能)
-  - [1.3. Kafka 适用场景](#13-kafka-适用场景)
-  - [1.4. Kafka 术语](#14-kafka-术语)
-  - [1.5. Kafka 基本工作流程](#15-kafka-基本工作流程)
-  - [1.6. Kafka 发行版本](#16-kafka-发行版本)
-  - [1.7. Kafka 重大版本](#17-kafka-重大版本)
+  - [1.1. Kafka 的功能](#11-kafka-的功能)
+  - [1.2. Kafka 的特性](#12-kafka-的特性)
+  - [1.3. Kafka 术语](#13-kafka-术语)
+  - [1.4. Kafka 发行版本](#14-kafka-发行版本)
+  - [1.5. Kafka 重大版本](#15-kafka-重大版本)
 - [2. Kafka 服务端使用入门](#2-kafka-服务端使用入门)
   - [2.1. 步骤一、获取 Kafka](#21-步骤一获取-kafka)
   - [2.2. 步骤二、启动 Kafka 环境](#22-步骤二启动-kafka-环境)
@@ -32,36 +30,38 @@
 
 ## 1. Kafka 简介
 
-> **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台**。
-
-![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210407151324.png)
-
-### 1.1. Kafka 的特性
-
-Kafka 具有如下特性：
-
-- **伸缩性** - 随着数据量增长，可以通过对 Broker 集群水平扩展来提高系统性能。
-- **高性能** - 通过横向扩展生产者、消费者(通过消费者群组实现)和 Broker（通过扩展实现系统伸缩性）可以轻松处理巨大的消息流。
-- **消息持久化** - Kafka 将所有的消息存储到磁盘，并在结构中对它们进行排序，以便利用顺序磁盘读取，所以消息不会丢失。
-
-### 1.2. Kafka 核心功能
-
-- **发布 / 订阅** - 发布 / 订阅类似于一个消息系统，读写流式的数据
-- **流处理** - 编写可扩展的流处理应用，用于实时事件响应
-- **存储** - 将流式数据存储在一个分布式、有副本的集群中
-
-### 1.3. Kafka 适用场景
-
-Kafka 适用于两种场景:
-
-- **构造实时流数据管道**，它可以在应用间可靠地传输数据（相当于消息队列）。
-- **构建实时流式应用程序**，对这些流数据进行转换（即流处理，通过 kafka stream 在主题内部进行转换）。
-
-Kafka 允许您将大量消息通过集中介质存储并存储，而不用担心性能或数据丢失等问题。这意味着它非常适合用作系统架构的核心，充当连接不同应用程序的集中介质。Kafka 可以成为事件驱动架构的核心部分，并真正将应用程序彼此分离。
+> **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台，此外，还可以作为数据存储**。
 
 ![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-event-system.png)
 
-### 1.4. Kafka 术语
+### 1.1. Kafka 的功能
+
+Kafka 的核心功能如下：
+
+- **消息引擎** - Kafka 可以作为一个消息引擎系统。
+- **流处理** - Kafka 可以作为一个分布式流处理平台。
+- **存储** - Kafka 可以作为一个安全的分布式存储。
+
+### 1.2. Kafka 的特性
+
+Kafka 的设计目标：
+
+- **高性能**
+  - **分区、分段、索引**：基于分区机制提供并发处理能力。分段、索引提升了数据读写的查询效率。
+  - **顺序读写**：使用顺序读写提升磁盘 IO 性能。
+  - **零拷贝**：利用零拷贝技术，提升网络 I/O 效率。
+  - **页缓存**：利用操作系统的 PageCache 来缓存数据（典型的利用空间换时间）
+  - **批量读写**：批量读写可以有效提升网络 I/O 效率。
+  - **数据压缩**：Kafka 支持数据压缩，可以有效提升网络 I/O 效率。
+  - **pull 模式**：Kafka 架构基于 pull 模式，可以自主控制消费策略，提升传输效率。
+- **高可用**
+  - **持久化**：Kafka 所有的消息都存储在磁盘，天然支持持久化。
+  - **副本机制**：Kafka 的 Broker 集群支持副本机制，可以通过冗余，来保证其整体的可用性。
+  - **选举 Leader**：Kafka 基于 ZooKeeper 支持选举 Leader，实现了故障转移能力。
+- **伸缩性**
+  - **分区**：Kafka 的分区机制使得其具有良好的伸缩性。
+
+### 1.3. Kafka 术语
 
 - 消息：Record。Kafka 是消息引擎嘛，这里的消息就是指 Kafka 处理的主要对象。
 - **Broker** - Kafka 集群包含一个或多个节点，这种节点被称为 Broker。
@@ -76,34 +76,7 @@ Kafka 允许您将大量消息通过集中介质存储并存储，而不用担�
 - **Consumer Group**：消费者组。多个 Consumer 实例共同组成的一个组，同时消费多个分区以实现高吞吐。每个 Consumer 属于一个特定的 Consumer Group（可以为每个 Consumer 指定 group name，若不指定 Group 则属于默认的 Group）。**在同一个 Group 中，每一个 Consumer 可以消费多个 Partition，但是一个 Partition 只能指定给一个这个 Group 中一个 Consumer**。
 - **Rebalance**：再均衡。 消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。
 
-![img](http://kafka.apachecn.org/10/images/consumer-groups.png)
-
-### 1.5. Kafka 基本工作流程
-
-Kafka 通过 Topic 对存储的流数据进行分类。
-
-Topic 就是数据主题，是数据记录发布的地方，可以用来区分业务系统。一个 Topic 可以拥有一个或者多个消费者来订阅它的数据。
-
-在 Kafka 中，任意一个 Topic 维护一个 Partition 日志，如下所示：
-
-![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-log-anatomy.png)
-
-每个 Partition 都是一个有序的、不可变的记录序列，不断追加到结构化的提交日志中。Partition 中的记录每个分配一个连续的 id 号，称为偏移量（Offset），用于唯一标识 Partition 内的每条记录。
-
-**Kafka 集群持久化保存（使用可配置的保留期限）所有发布记录——无论它们是否被消费**。例如，如果保留期限被设置为两天，则在记录发布后的两天之内，它都可以被消费，超过时间后将被丢弃以释放空间。Kafka 的性能和数据大小无关，所以长时间存储数据没有什么问题。
-
-![img](http://kafka.apachecn.org/10/images/log_consumer.png)
-
-实际上，保留在每个 Consumer 基础上的唯一元数据是该 Consumer 在日志中消费的位置。这个偏移量是由 Consumer 控制的：Consumer 通常会在读取记录时线性的增加其偏移量。但实际上，由于位置由 Consumer 控制，所以 Consumer 可以采用任何顺序来消费记录。
-
-日志中的 Partition 有以下几个用途：
-
-- 首先，它们允许日志的大小超出服务器限制的大小。每个单独的 Partition 必须适合承载它的服务器，但是一个 Topic 可能有很多 Partition，因此它可以处理任意数量的数据。
-- 其次，它可以作为并行的单位。
-
-![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-producer-consumer.png)
-
-### 1.6. Kafka 发行版本
+### 1.4. Kafka 发行版本
 
 Kafka 主要有以下发行版本：
 
@@ -111,7 +84,9 @@ Kafka 主要有以下发行版本：
 - **Confluent Kafka**：Confluent 公司提供的 Kafka。优势在于集成了很多高级特性且由 Kafka 原班人马打造，质量上有保证；缺陷在于相关文档资料不全，普及率较低，没有太多可供参考的范例。
 - **CDH/HDP Kafka**：大数据云公司提供的 Kafka，内嵌 Apache Kafka。优势在于操作简单，节省运维成本；缺陷在于把控度低，演进速度较慢。
 
-### 1.7. Kafka 重大版本
+### 1.5. Kafka 重大版本
+
+Kafka 有以下重大版本：
 
 - 0.8
   - 正式引入了副本机制
@@ -274,9 +249,7 @@ Stream API 的 maven 依赖：
 
 ### 3.2. Kafka 核心 API
 
-Kafka 有 4 个核心 API
-
-![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-core-api.png)
+Kafka 有 5 个核心 API
 
 - [Producer API](https://kafka.apache.org/documentation.html#producerapi) - 允许一个应用程序发布一串流式数据到一个或者多个 Kafka Topic。
 - [Consumer API](https://kafka.apache.org/documentation.html#consumerapi) - 允许一个应用程序订阅一个或多个 Kafka Topic，并且对发布给他们的流式数据进行处理。
@@ -508,7 +481,7 @@ public void consumeMessageForIndependentConsumer(String topic){
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**
-  - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
+  - [Kafka 中文文档](https://kafka.apachecn.org/)
   - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
 - **文章**
   - [Thorough Introduction to Apache Kafka](https://hackernoon.com/thorough-introduction-to-apache-kafka-6fbf2989bbc1)

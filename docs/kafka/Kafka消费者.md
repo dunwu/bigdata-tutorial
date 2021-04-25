@@ -35,11 +35,27 @@
 
 ## 1. 消费者简介
 
+### pull 模式
+
+消息引擎获取消息有两种模式：
+
+- push 模式：MQ 推送数据给消费者
+- pull 模式：消费者主动向 MQ 请求数据
+
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210425190248.png)
+
+Kafka 消费者（Consumer）以 pull 方式从 Broker 拉取消息。相比于 push 方式，pull 方式灵活度和扩展性更好，因为消费的主动性由消费者自身控制。
+
+push 模式的优缺点：
+
+- 缺点：由 broker 决定消息推送的速率，对于不同消费速率的consumer就不太好处理了。push模式下，当broker推送的速率远大于consumer消费的速率时，consumer恐怕就要崩溃了。
+
+push 模式的优缺点：
+
+- 优点：consumer可以根据自己的消费能力自主的决定消费策略
+- 缺点：如果broker没有可供消费的消息，将导致consumer不断在循环中轮询，直到新消息到达。为了避免这点，Kafka有个参数可以让consumer阻塞直到新消息到达
+
 ### 1.1. 消费者
-
-Kafka 消费者（Consumer）以 **pull 方式**从 Broker 拉取消息，Consumer可以订阅一个或多个主题，然后按照消息生成顺序（**kafka 只能保证分区中消息的顺序**）读取消息。
-
-![img](http://kafka.apachecn.org/10/images/log_consumer.png)
 
 每个 Consumer 的唯一元数据是该 Consumer 在日志中消费的位置。这个偏移量是由 Consumer 控制的：Consumer 通常会在读取记录时线性的增加其偏移量。但实际上，由于位置由 Consumer 控制，所以 Consumer 可以采用任何顺序来消费记录。
 
@@ -69,10 +85,10 @@ Kafka 消费者从属于消费者群组，**一个群组里的 Consumer 订阅�
 
 Kafka 消费者通过 `poll` 来获取消息，但是获取消息时并不是立刻返回结果，需要考虑两个因素：
 
-- 消费者通过 `customer.poll(time)` 中设置的等待时间
+- 消费者通过 `customer.poll(time)` 中设置等待时间
 - Broker 会等待累计一定量数据，然后发送给消费者。这样可以减少网络开销。
 
-![img](http://upload-images.jianshu.io/upload_images/3101171-d7d111e7c7e7f504.png)
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210425194822.png)
 
 poll 除了获取消息外，还有其他作用：
 

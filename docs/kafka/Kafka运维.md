@@ -315,7 +315,7 @@ zookeeper-shell localhost:2182 ls /
 
 首先 Broker 是需要配置存储信息的，即 Broker 使用哪些磁盘。那么针对存储信息的重要参数有以下这么几个：
 
-- `log.dirs`：这是非常重要的参数，指定了 Broker 需要使用的若干个文件目录路径。要知道这个参数是没有默认值的，这说明什么？这说明它必须由你亲自指定。
+- `log.dirs`：指定了 Broker 需要使用的若干个文件目录路径。这个参数是没有默认值的，必须由使用者亲自指定。
 - `log.dir`：注意这是 dir，结尾没有 s，说明它只能表示单个路径，它是补充上一个参数用的。
 
 `log.dirs` 具体格式是一个 CSV 格式，也就是用逗号分隔的多个路径，比如`/home/kafka1,/home/kafka2,/home/kafka3`这样。如果有条件的话你最好保证这些目录挂载到不同的物理磁盘上。这样做有两个好处：
@@ -325,7 +325,7 @@ zookeeper-shell localhost:2182 ls /
 
 #### zookeeper 配置
 
-Kafka 与 ZooKeeper 相关的最重要的参数当属`zookeeper.connect`。这也是一个 CSV 格式的参数，比如我可以指定它的值为`zk1:2181,zk2:2181,zk3:2181`。2181 是 ZooKeeper 的默认端口。
+Kafka 与 ZooKeeper 相关的最重要的参数当属 `zookeeper.connect`。这也是一个 CSV 格式的参数，比如我可以指定它的值为`zk1:2181,zk2:2181,zk3:2181`。2181 是 ZooKeeper 的默认端口。
 
 现在问题来了，如果我让多个 Kafka 集群使用同一套 ZooKeeper 集群，那么这个参数应该怎么设置呢？这时候 chroot 就派上用场了。这个 chroot 是 ZooKeeper 的概念，类似于别名。
 
@@ -343,7 +343,7 @@ Kafka 与 ZooKeeper 相关的最重要的参数当属`zookeeper.connect`。这�
 
 #### Topic 管理
 
-- `auto.create.topics.enable`：是否允许自动创建 Topic。
+- `auto.create.topics.enable`：是否允许自动创建 Topic。一般设为 false，由运维把控创建 Topic。
 - `unclean.leader.election.enable`：是否允许 Unclean Leader 选举。
 - `auto.leader.rebalance.enable`：是否允许定期进行 Leader 选举。
 
