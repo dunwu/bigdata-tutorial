@@ -1,4 +1,4 @@
-# Kafka 物理存储
+# Kafka 存储
 
 > Kafka 是 Apache 的开源项目。**Kafka 既可以作为一个消息队列中间件，也可以作为一个分布式流处理平台**。
 >
@@ -16,6 +16,10 @@
 - [8. 参考资料](#8-参考资料)
 
 <!-- /TOC -->
+
+## 逻辑存储
+
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210427195053.png)
 
 ## 1. 持久化
 
@@ -39,8 +43,6 @@
 Kafka 的数据结构采用三级结构，即：主题（Topic）、分区（Partition）、消息（Record）。
 
 在 Kafka 中，任意一个 Topic 维护了一组 Partition 日志，如下所示：
-
-![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-log-anatomy.png)
 
 请注意：这里的主题只是一个逻辑上的抽象概念，实际上，**Kafka 的基本存储单元是 Partition**。Partition 无法在多个 Broker 间进行再细分，也无法在同一个 Broker 的多个磁盘上进行再细分。所以，分区的大小受到单个挂载点可用空间的限制。
 

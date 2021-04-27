@@ -170,7 +170,7 @@ broker 会在它所监听的每一个端口上运行一个 Acceptor 线程，这
 
 当请求放进请求队列后，IO 线程负责进行处理。
 
-![img](http://dunwu.test.upcdn.net/snap/20200621122854.png)
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210427194506.png)
 
 生产请求和获取请求都需要发送给 Partition 的 Leader 副本处理。如果 Broker 收到一个针对特定分区的请求，而该分区的 Leader 在另一个 Broker 上，那么发送请求的客户端会收到一个“非分区 Leader”的错误响应。Kafka 客户端要自己负责把生成请求和获取请求发送到正确的 Broker 上。
 
