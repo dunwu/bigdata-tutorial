@@ -56,6 +56,8 @@ Kafka 在 ZooKeeper 的关键存储信息：
 
 控制器组件（Controller），是 Apache Kafka 的核心组件。它的主要作用是在 ZooKeeper 的帮助下管理和协调整个 Kafka 集群。控制器其实就是一个 Broker，只不过它除了具有一般 Broker 的功能以外，还负责 Leader 的选举。
 
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20210429071042.png)
+
 ### 2.1. 如何选举控制器
 
 集群中任意一台 Broker 都能充当控制器的角色，但是，在运行过程中，只能有一个 Broker 成为控制器，行使其管理和协调的职责。实际上，Broker 在启动时，会尝试去 ZooKeeper 中创建 `/controller` 节点。Kafka 当前选举控制器的规则是：**第一个在 ZooKeeper 成功创建 /controller 临时节点的 Broker 会被指定为控制器**。
@@ -251,3 +253,5 @@ Follower 宕机，啥事儿没有；Leader 宕机了，会从 Follower 中重新
 - **教程**
   - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
   - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
+- **文章**
+  - [Thorough Introduction to Apache Kafka](https://hackernoon.com/thorough-introduction-to-apache-kafka-6fbf2989bbc1)

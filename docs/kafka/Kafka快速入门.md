@@ -63,18 +63,23 @@ Kafka 的设计目标：
 
 ### 1.3. Kafka 术语
 
-- 消息：Record。Kafka 是消息引擎嘛，这里的消息就是指 Kafka 处理的主要对象。
-- **Broker** - Kafka 集群包含一个或多个节点，这种节点被称为 Broker。
-- **Topic**：主题。Topic 是承载消息的逻辑容器，在实际使用中多用来区分具体的业务。不同 Topic 的消息是物理隔离的；同一个 Topic 的消息保存在一个或多个 Broker 上，但用户只需指定消息的 Topic 即可生产或消费数据而不必关心数据存于何处。对于每一个 Topic， Kafka 集群都会维持一个分区日志。
-- **Partition**：分区。Partition 是一个有序不变的消息序列。为了提高 Kafka 的吞吐率，每个 Topic 包含一个或多个 Partition，每个 Partition 在物理上对应一个文件夹，该文件夹下存储这个 Partition 的所有消息和索引文件。Kafka 日志的 Partition 分布在 Kafka 集群的节点上。每个节点在处理数据和请求时，共享这些 Partition。每一个 Partition 都会在已配置的节点上进行备份，确保容错性。
-- **Offset**：消息偏移量。表示分区中每条消息的位置信息，是一个单调递增且不变的值。
-- **Replica**：副本。Kafka 中同一条消息能够被拷贝到多个地方以提供数据冗余，这些地方就是所谓的副本。副本还分为领导者副本和追随者副本，各自有不同的角色划分。副本是在分区层级下的，即每个分区可配置多个副本实现高可用。
-- **Producer**：生产者。向主题发布新消息的应用程序。Producer 可以将数据发布到所选择的 Topic 中。Producer 负责将记录分配到 Topic 中的哪一个 Partition 中。
-- **Consumer**：消费者。从主题订阅新消息的应用程序。Consumer 使用一个 Consumer Group 来进行标识，发布到 Topic 中的每条记录被分配给订阅 Consumer Group 中的一个 Consumer，Consumer 可以分布在多个进程中或者多个机器上。
-  - 如果所有的 Consumer 在同一 Consumer Group 中，消息记录会负载平衡到每一个 Consumer。
-  - 如果所有的 Consumer 在不同的 Consumer Group 中，每条消息记录会广播到所有的 Consumer。
-- **Consumer Group**：消费者组。多个 Consumer 实例共同组成的一个组，同时消费多个分区以实现高吞吐。每个 Consumer 属于一个特定的 Consumer Group（可以为每个 Consumer 指定 group name，若不指定 Group 则属于默认的 Group）。**在同一个 Group 中，每一个 Consumer 可以消费多个 Partition，但是一个 Partition 只能指定给一个这个 Group 中一个 Consumer**。
-- **Rebalance**：再均衡。 消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。
+- **消息**：Kafka 的数据单元被称为消息。消息由字节数组组成。
+- **批次**：批次就是一组消息，这些消息属于同一个主题和分区。
+- **主题（Topic）**：Kafka 消息通过主题进行分类。主题就类似数据库的表。
+  - 不同主题的消息是物理隔离的；
+  - 同一个主题的消息保存在一个或多个 Broker 上。但用户只需指定消息的 Topic 即可生产或消费数据而不必关心数据存于何处。
+  - 主题有一个或多个分区。
+- **分区（Partition）**：分区是一个有序不变的消息序列，消息以追加的方式写入分区，然后以先入先出的顺序读取。Kafka 通过分区来实现数据冗余和伸缩性。
+- **消息偏移量（Offset）**：表示分区中每条消息的位置信息，是一个单调递增且不变的值。
+- **生产者（Producer）**：生产者是向主题发布新消息的 Kafka 客户端。生产者可以将数据发布到所选择的主题中。生产者负责将记录分配到主题中的哪一个分区中。
+- **消费者（Consumer）**：消费者是从主题订阅新消息的 Kafka 客户端。消费者通过检查消息的偏移量来区分消息是否已读。
+- **消费者群组（Consumer Group）**：多个消费者共同构成的一个群组，同时消费多个分区以实现高并发。
+  - 每个消费者属于一个特定的消费者群组（可以为每个消费者指定消费者群组，若不指定，则属于默认的群组）。
+  - 群组中，一个消费者可以消费多个分区
+  - 群组中，每个分区只能被指定给一个消费
+- **再均衡（Rebalance）**：消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。分区再均衡是 Kafka 消费者端实现高可用的重要手段。
+- **Broker** - 一个独立的 Kafka 服务器被称为 Broker。Broker 接受来自生产者的消息，为消息设置偏移量，并提交消息到磁盘保存；消费者向 Broker 请求消息，Broker 负责返回已提交的消息。
+- **副本（Replica）**：Kafka 中同一条消息能够被拷贝到多个地方以提供数据冗余，这些地方就是所谓的副本。副本还分为领导者副本和追随者副本，各自有不同的角色划分。副本是在分区层级下的，即每个分区可配置多个副本实现高可用。
 
 ### 1.4. Kafka 发行版本
 
@@ -481,9 +486,8 @@ public void consumeMessageForIndependentConsumer(String topic){
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
 - **教程**
-  - [Kafka 中文文档](https://kafka.apachecn.org/)
+  - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
   - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
 - **文章**
   - [Thorough Introduction to Apache Kafka](https://hackernoon.com/thorough-introduction-to-apache-kafka-6fbf2989bbc1)
   - [Kafka(03) Kafka 介绍](http://www.heartthinkdo.com/?p=2006#233)
-  - [Kafka 剖析（一）：Kafka 背景及架构介绍](http://www.infoq.com/cn/articles/kafka-analysis-part-1)
