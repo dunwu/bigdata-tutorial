@@ -1,13 +1,14 @@
 ---
 home: true
-heroImage: /images/dunwu-logo-200.png
+heroImage: https://raw.githubusercontent.com/dunwu/images/dev/common/dunwu-logo-200.png
 heroText: BIGDATA TUTORIAL
 tagline: ☕ BIGDATA TUTORIAL 是一个大数据教程。
 actionLink: /
 footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 ---
 
-# BIGDATA TUTORIAL
+![license](https://badgen.net/github/license/dunwu/bigdata-tutorial)
+![build](https://api.travis-ci.com/dunwu/bigdata-tutorial.svg?branch=master)
 
 > ☕ **bigdata-tutorial** 是一个大数据教程。
 >

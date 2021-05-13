@@ -136,7 +136,7 @@ Broker 有 3 个配置参数会影响 Kafka 消息存储的可靠性。
 
 消费者唯一要做的是确保哪些消息是已经读取过的，哪些是没有读取过的（通过提交偏移量给 Broker 来确认）。如果消费者提交了偏移量却未能处理完消息，那么就有可能造成消息丢失，这也是消费者丢失消息的主要原因。
 
-![img](http://dunwu.test.upcdn.net/snap/20200727140159.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200727140159.png)
 
 #### 消费者的可靠性配置
 

@@ -61,7 +61,7 @@ push 模式的优缺点：
 
 **一条消息只有被提交，才会被消费者获取到**。如下图，只能消费 Message0、Message1、Message2：
 
-![img](http://dunwu.test.upcdn.net/snap/20200621113917.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200621113917.png)
 
 ### 1.2. 消费者群组
 

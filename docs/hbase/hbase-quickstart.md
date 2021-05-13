@@ -36,7 +36,7 @@
 >
 > HBase 适用场景：实时地随机访问超大数据集。
 
-![img](http://dunwu.test.upcdn.net/snap/20200601170449.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601170449.png)
 
 ### Hadoop 的局限
 
@@ -83,7 +83,7 @@ HBase 是一种类似于 `Google’s Big Table` 的数据模型，它是 Hadoop 
 
 HBase 是一个面向列的数据库，在表中它由行排序。更确切的说，HBase 是一个面向 `列族` 的数据库。HBase 表 仅定义列族，表具有多个列族，每个列族可以包含任意数量的列，列由多个单元格（cell ）组成，单元格可以存储多个版本的数据，多个版本数据以时间戳进行区分。
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551164163369.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551164163369.png)
 
 ### HBase 表结构
 
@@ -114,7 +114,7 @@ HBase 中的列由列族和列限定符组成，由 `:`(冒号) 进行分隔，�
 
 `Cell` 是行，列族和列限定符的组合，并包含值和时间戳。你可以等价理解为关系型数据库中由指定行和指定列确定的一个单元格，但不同的是 HBase 中的一个单元格是由多个版本的数据组成的，每个版本的数据用时间戳进行区分。
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551164224778.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551164224778.png)
 
 #### Timestamp (时间戳)
 
@@ -126,7 +126,7 @@ HBase 中通过 `row key` 和 `column` 确定的为一个存储单元称为 `Cel
 - 该表具有两个列族，分别是 personal 和 office;
 - 其中列族 personal 拥有 name、city、phone 三个列，列族 office 拥有 tel、addres 两个列。
 
-![img](http://dunwu.test.upcdn.net/snap/20200601172926.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601172926.png)
 
 ### HBase 表特性
 
@@ -202,13 +202,13 @@ HBase 自动把表水平划分成区域（region）。每个区域由表中行�
 
 > **`Region` 只不过是表被拆分，并分布在 Region Server。Region 是 HBase 集群上分布数据的最小单位**。
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551165887616.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551165887616.png)
 
 每个表一开始只有一个 `Region`，随着数据不断增加，`Region` 会不断增大，当增大到一个阀值的时候，`Region` 就会等分为两个新的 `Region`。当 Table 中的行不断增多，就会有越来越多的 `Region`。
 
 `Region` 是 HBase 中**分布式存储和负载均衡的最小单元**。这意味着不同的 `Region` 可以分布在不同的 `Region Server` 上。但一个 `Region` 是不会拆分到多个 Server 上的。
 
-![img](http://dunwu.test.upcdn.net/snap/20200601181219.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601181219.png)
 
 ### Region Server
 
@@ -225,15 +225,15 @@ HBase 自动把表水平划分成区域（region）。每个区域由表中行�
   - Flush 发生时，创建 HFile Writer，第一个空的 Data Block 出现，初始化后的 Data Block 中为 Header 部分预留了空间，Header 部分用来存放一个 Data Block 的元数据信息。
   - 而后，位于 MemStore 中的 KeyValues 被一个个 append 到位于内存中的第一个 Data Block 中：
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551166602999.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551166602999.png)
 
 Region Server 存取一个子表时，会创建一个 Region 对象，然后对表的每个列族创建一个 `Store` 实例，每个 `Store` 会有 0 个或多个 `StoreFile` 与之对应，每个 `StoreFile` 则对应一个 `HFile`，HFile 就是实际存储在 HDFS 上的文件。
 
-![img](http://dunwu.test.upcdn.net/snap/20200612151239.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200612151239.png)
 
 ## 四、HBase 系统架构
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551164744748.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551164744748.png)
 
 和 HDFS、YARN 一样，**HBase 也采用 master / slave 架构**：
 
@@ -252,14 +252,14 @@ master 服务器负责协调 region 服务器：
 - 监控集群中的所有 region 服务器
 - 处理 DDL 请求（创建、删除、更新表）
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551166513572.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551166513572.png)
 
 ### Region Server
 
 - Region Server 负责维护 Master 分配给它的 Region，并处理发送到 Region 上的 IO 请求；
 - 当 Region 过大，**Region Server 负责自动切片**，并通知 Master 记录更新。
 
-![img](http://dunwu.test.upcdn.net/snap/20200612151602.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200612151602.png)
 
 ### ZooKeeper
 
@@ -271,7 +271,7 @@ ZooKeeper 的作用：
 - 所有 Masters 会竞争性地在 Zookeeper 上创建同一个临时节点，由于 Zookeeper 只能有一个同名节点，所以必然只有一个 Master 能够创建成功，此时该 Master 就是主 Master，主 Master 会定期向 Zookeeper 发送心跳。备用 Masters 则通过 Watcher 机制对主 HMaster 所在节点进行监听；
 - 如果主 Master 未能定时发送心跳，则其持有的 Zookeeper 会话会过期，相应的临时节点也会被删除，这会触发定义在该节点上的 Watcher 事件，使得备用的 Master Servers 得到通知。所有备用的 Master Servers 在接到通知后，会再次去竞争性地创建临时节点，完成主 Master 的选举。
 
-![img](http://dunwu.test.upcdn.net/cs/bigdata/hbase/1551166447147.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551166447147.png)
 
 ## 五、HBase 读写流程
 
@@ -299,7 +299,7 @@ ZooKeeper 的作用：
 
 注：`META` 表是 HBase 中一张特殊的表，它保存了所有 Region 的位置信息，META 表自己的位置信息则存储在 ZooKeeper 上。
 
-![img](http://dunwu.test.upcdn.net/snap/20200601182655.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601182655.png)
 
 > 更为详细读取数据流程参考：
 >

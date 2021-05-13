@@ -32,7 +32,7 @@
 
 > **Apache Kafka 是一款开源的消息引擎系统，也是一个分布式流计算平台，此外，还可以作为数据存储**。
 
-![img](http://dunwu.test.upcdn.net/cs/java/javaweb/distributed/mq/kafka/kafka-event-system.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/mq/kafka/kafka-event-system.png)
 
 ### 1.1. Kafka 的功能
 

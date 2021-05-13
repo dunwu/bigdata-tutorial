@@ -26,7 +26,7 @@
 
 ## 大数据处理流程
 
-![img](http://dunwu.test.upcdn.net/snap/20200601160205.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601160205.png)
 
 ### 1.1 数据采集
 
@@ -93,7 +93,7 @@
 
 上面列出的都是比较主流的大数据框架，社区都很活跃，学习资源也比较丰富。建议从 Hadoop 开始入门学习，因为它是整个大数据生态圈的基石，其它框架都直接或者间接依赖于 Hadoop 。接着就可以学习计算框架，Spark 和 Flink 都是比较主流的混合处理框架，Spark 出现得较早，所以其应用也比较广泛。 Flink 是当下最火热的新一代的混合处理框架，其凭借众多优异的特性得到了众多公司的青睐。两者可以按照你个人喜好或者实际工作需要进行学习。
 
-![img](http://dunwu.test.upcdn.net/snap/20200601160917.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601160917.png)
 
 ### 学习资料
 

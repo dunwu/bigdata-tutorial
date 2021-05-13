@@ -1,11 +1,12 @@
 <p align="center">
     <a href="https://dunwu.github.io/bigdata-tutorial/" target="_blank" rel="noopener noreferrer">
-        <img src="http://dunwu.test.upcdn.net/common/logo/dunwu-logo.png" alt="logo" width="100px">
+        <img src="https://raw.githubusercontent.com/dunwu/images/dev/common/dunwu-logo-200.png" alt="logo" width="100px">
     </a>
 </p>
 
 <p align="center">
     <img src="https://badgen.net/github/license/dunwu/bigdata-tutorial" alt="license">
+    <img src="https://travis-ci.com/dunwu/bigdata-tutorial.svg?branch=master" alt="build">
 </p>
 
 <h1 align="center">BIGDATA TUTORIAL</h1>
