@@ -16,7 +16,7 @@
 
 ### [Kafka 可靠传输](Kafka可靠传输.md)
 
-### [Kafka 物理存储](Kafka物理存储.md)
+### [Kafka 存储](Kafka存储.md)
 
 ### [Kafka 流式处理](Kafka流式处理.md)
 

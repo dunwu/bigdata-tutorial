@@ -62,7 +62,7 @@
 - [Kafka 消费者](docs/kafka/Kafka消费者.md)
 - [Kafka 集群](docs/kafka/Kafka集群.md)
 - [Kafka 可靠传输](docs/kafka/Kafka可靠传输.md)
-- [Kafka 物理存储](docs/kafka/Kafka物理存储.md)
+- [Kafka 存储](docs/kafka/Kafka存储.md)
 - [Kafka 流式处理](docs/kafka/Kafka流式处理.md)
 - [Kafka 运维](docs/kafka/Kafka运维.md)
 
