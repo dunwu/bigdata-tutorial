@@ -41,7 +41,7 @@ ZooKeeper 具有以下特性：
 
 树中的节点被称为 **`znode`**，其中根节点为 `/`，每个节点上都会保存自己的数据和节点信息。znode 可以用于存储数据，并且有一个与之相关联的 ACL（详情可见 [ACL](#ACL)）。ZooKeeper 的设计目标是实现协调服务，而不是真的作为一个文件存储，因此 znode 存储数据的**大小被限制在 1MB 以内**。
 
-![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/distributed/zookeeper/zookeeper_1.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/rpc/zookeeper/zookeeper_1.png)
 
 **ZooKeeper 的数据访问具有原子性**。其读写操作都是要么全部成功，要么全部失败。
 
@@ -108,7 +108,7 @@ ZooKeeper 定义了如下五种权限：
 
 由于处理读请求不需要服务器之间的交互，**Follower/Observer 越多，整体系统的读请求吞吐量越大**，也即读性能越好。
 
-![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/distributed/zookeeper/zookeeper_3.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/rpc/zookeeper/zookeeper_3.png)
 
 ### 写操作
 
@@ -116,7 +116,7 @@ ZooKeeper 定义了如下五种权限：
 
 #### 写 Leader
 
-![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/distributed/zookeeper/zookeeper_4.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/rpc/zookeeper/zookeeper_4.png)
 
 由上图可见，通过 Leader 进行写操作，主要分为五步：
 
@@ -134,7 +134,7 @@ ZooKeeper 定义了如下五种权限：
 
 #### 写 Follower/Observer
 
-![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/distributed/zookeeper/zookeeper_5.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/rpc/zookeeper/zookeeper_5.png)
 
 - Follower/Observer 均可接受写请求，但不能直接处理，而需要将写请求转发给 Leader 处理。
 - 除了多了一步请求转发，其它流程与直接写 Leader 无任何区别。
@@ -300,7 +300,7 @@ ZAB 协议定义了两个可以**无限循环**的流程：
 
 那么，ZooKeeper 是如何实现副本机制的呢？答案是：ZAB 协议的原子广播。
 
-![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/distributed/zookeeper/zookeeper_3.png)
+![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/rpc/zookeeper/zookeeper_3.png)
 
 ZAB 协议的原子广播要求：
 
