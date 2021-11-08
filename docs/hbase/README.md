@@ -2,10 +2,10 @@
 
 ## 📖 内容
 
-- [HBase 应用指南](hbase-quickstart.md)
-- [HBase 命令](hbase-cli.md)
-- [HBase Java API](hbase-api.md)
-- [HBase 配置](hbase-ops.md)
+- [HBase 原理](HBase原理.md)
+- [HBase 应用](HBase应用.md)
+- [HBase 命令](HBase命令.md)
+- [HBase 运维](HBase运维.md)
 
 ## 📚 资料
 
@@ -20,6 +20,7 @@
   - [《Hadoop 权威指南（第四版）》](https://item.jd.com/12109713.html)
 - **文章**
   - [Bigtable: A Distributed Storage System for Structured Data](https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf)
+  - [Intro to HBase](https://www.slideshare.net/alexbaranau/intro-to-hbase)
 
 ## 🚪 传送门
 

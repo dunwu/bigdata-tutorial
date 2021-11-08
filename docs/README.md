@@ -39,17 +39,18 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 
 ### HBASE
 
-- [HBase 命令](hbase/hbase-cli.md)
-- [HBase Java API](hbase/hbase-api.md)
-- [HBase 配置](hbase/hbase-ops.md)
+- [HBase 原理](hbase/HBase原理.md)
+- [HBase 应用](hbase/HBase应用.md)
+- [HBase 命令](hbase/HBase命令.md)
+- [HBase 运维](hbase/HBase运维.md)
 
 ### ZooKeeper
 
 > **[ZooKeeper](zookeeper) 是一个分布式协调服务**。
 
-- [ZooKeeper 应用指南](zookeeper/zookeeper-quickstart.md)
-- [ZooKeeper Java API](zookeeper/zookeeper-api.md)
-- [ZooKeeper 运维](zookeeper/zookeeper-ops.md)
+- [ZooKeeper 原理](zookeeper/ZooKeeper原理.md)
+- [ZooKeeper 应用](zookeeper/ZooKeeper应用.md)
+- [ZooKeeper 运维](zookeeper/ZooKeeper运维.md)
 
 ### Kafka
 

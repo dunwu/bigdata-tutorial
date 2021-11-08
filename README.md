@@ -20,7 +20,7 @@
 
 ## 📖 内容
 
-### HDFS
+### [Kafka](docs/hdfs)
 
 > [HDFS](docs/hdfs) 是一个分布式文件系统。
 
@@ -28,7 +28,7 @@
 - [HDFS 运维](docs/hdfs/hdfs-ops.md)
 - [HDFS Java API](docs/hdfs/hdfs-java-api.md)
 
-### HIVE
+### [Hive](docs/hive)
 
 - [Hive 入门](docs/hive/hive-quickstart.md)
 - [Hive DDL](docs/hive/hive-ddl.md)
@@ -38,22 +38,26 @@
 - [Hive 查询](docs/hive/hive-query.md)
 - [Hive 运维](docs/hive/hive-ops.md)
 
-### HBASE
+### [HBASE](docs/hbase)
 
-- [HBase 应用指南](docs/hbase/hbase-quickstart.md)
-- [HBase 命令](docs/hbase/hbase-cli.md)
-- [HBase Java API](docs/hbase/hbase-api.md)
-- [HBase 配置](docs/hbase/hbase-ops.md)
+- [HBase 原理](docs/hbase/HBase原理.md)
+- [HBase 应用](docs/hbase/HBase应用.md)
+- [HBase 命令](docs/hbase/HBase命令.md)
+- [HBase 运维](docs/hbase/HBase运维.md)
 
-### ZooKeeper
+### [ZooKeeper](docs/zookeeper)
 
-> **[ZooKeeper](docs/zookeeper) 是一个分布式协调服务**。
+> ZooKeeper 是 Apache 的顶级项目。**ZooKeeper 为分布式应用提供了高效且可靠的分布式协调服务，提供了诸如统一命名服务、配置管理和分布式锁等分布式的基础服务。在解决分布式数据一致性方面，ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议**。
+>
+> ZooKeeper 主要用来解决分布式集群中应用系统的一致性问题，它能提供基于类似于文件系统的目录节点树方式的数据存储。但是 ZooKeeper 并不是用来专门存储数据的，它的作用主要是用来**维护和监控存储数据的状态变化。通过监控这些数据状态的变化，从而可以达到基于数据的集群管理**。
+>
+> 很多大名鼎鼎的框架都基于 ZooKeeper 来实现分布式高可用，如：Dubbo、Kafka 等。
 
-- [ZooKeeper 应用指南](docs/zookeeper/zookeeper-quickstart.md)
-- [ZooKeeper Java API](docs/zookeeper/zookeeper-api.md)
-- [ZooKeeper 运维](docs/zookeeper/zookeeper-ops.md)
+- [ZooKeeper 应用](docs/zookeeper/ZooKeeper应用.md)
+- [ZooKeeper 原理](docs/zookeeper/ZooKeeper原理.md)
+- [ZooKeeper 运维](docs/zookeeper/ZooKeeper运维.md)
 
-### Kafka
+### [Kafka](docs/kafka)
 
 > **[Kafka](docs/kafka) 是一个分布式流处理平台，此外，它也被广泛应用于消息队列**。
 

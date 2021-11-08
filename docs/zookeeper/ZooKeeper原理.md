@@ -1,14 +1,53 @@
-# ZooKeeper 应用指南
+# ZooKeeper 原理
 
-> **ZooKeeper 是一个分布式协调服务** ，由 Apache 进行维护。
+> ZooKeeper 是 Apache 的顶级项目。**ZooKeeper 为分布式应用提供了高效且可靠的分布式协调服务，提供了诸如统一命名服务、配置管理和分布式锁等分布式的基础服务。在解决分布式数据一致性方面，ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议**。
 >
-> **ZooKeeper 可以视为一个高可用的文件系统**。
+> ZooKeeper 主要用来解决分布式集群中应用系统的一致性问题，它能提供基于类似于文件系统的目录节点树方式的数据存储。但是 ZooKeeper 并不是用来专门存储数据的，它的作用主要是用来**维护和监控存储数据的状态变化。通过监控这些数据状态的变化，从而可以达到基于数据的集群管理**。
 >
-> ZooKeeper 可以用于发布/订阅、负载均衡、命令服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能 。
+> 很多大名鼎鼎的框架都基于 ZooKeeper 来实现分布式高可用，如：Dubbo、Kafka 等。
 
-## 一、ZooKeeper 简介
+<!-- TOC depthFrom:2 depthTo:3 -->
 
-### ZooKeeper 是什么
+- [1. ZooKeeper 简介](#1-zookeeper-简介)
+  - [1.1. ZooKeeper 是什么](#11-zookeeper-是什么)
+  - [1.2. ZooKeeper 的应用场景](#12-zookeeper-的应用场景)
+  - [1.3. ZooKeeper 的特性](#13-zookeeper-的特性)
+  - [1.4. ZooKeeper 的设计目标](#14-zookeeper-的设计目标)
+- [2. ZooKeeper 核心概念](#2-zookeeper-核心概念)
+  - [2.1. 服务](#21-服务)
+  - [2.2. 数据模型](#22-数据模型)
+  - [2.3. 节点信息](#23-节点信息)
+  - [2.4. 集群角色](#24-集群角色)
+  - [2.5. ACL](#25-acl)
+- [3. ZooKeeper 工作原理](#3-zookeeper-工作原理)
+  - [3.1. 读操作](#31-读操作)
+  - [3.2. 写操作](#32-写操作)
+  - [3.3. 事务](#33-事务)
+  - [3.4. 观察](#34-观察)
+  - [3.5. 会话](#35-会话)
+- [4. ZAB 协议](#4-zab-协议)
+  - [4.1. 选举 Leader](#41-选举-leader)
+  - [4.2. 原子广播（Atomic Broadcast）](#42-原子广播atomic-broadcast)
+- [5. ZooKeeper 应用](#5-zookeeper-应用)
+  - [5.1. 命名服务](#51-命名服务)
+  - [5.2. 配置管理](#52-配置管理)
+  - [5.3. 分布式锁](#53-分布式锁)
+  - [5.4. 集群管理](#54-集群管理)
+  - [5.5. 选举 Leader 节点](#55-选举-leader-节点)
+  - [5.6. 队列管理](#56-队列管理)
+- [6. ZooKeeper 的缺点](#6-zookeeper-的缺点)
+  - [6.1. ZooKeeper 不是为高可用性设计的](#61-zookeeper-不是为高可用性设计的)
+  - [6.2. ZooKeeper 的选举过程速度很慢](#62-zookeeper-的选举过程速度很慢)
+  - [6.3. ZooKeeper 的性能是有限的](#63-zookeeper-的性能是有限的)
+  - [6.4. ZooKeeper 无法进行有效的权限控制](#64-zookeeper-无法进行有效的权限控制)
+  - [6.5. 即使有了 ZooKeeper 也很难避免业务系统的数据不一致](#65-即使有了-zookeeper-也很难避免业务系统的数据不一致)
+- [7. 参考资料](#7-参考资料)
+
+<!-- /TOC -->
+
+## 1. ZooKeeper 简介
+
+### 1.1. ZooKeeper 是什么
 
 ZooKeeper 是 Apache 的顶级项目。**ZooKeeper 为分布式应用提供了高效且可靠的分布式协调服务，提供了诸如统一命名服务、配置管理和分布式锁等分布式的基础服务。在解决分布式数据一致性方面，ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议**。
 
@@ -16,7 +55,20 @@ ZooKeeper 主要用来解决分布式集群中应用系统的一致性问题，�
 
 很多大名鼎鼎的框架都基于 ZooKeeper 来实现分布式高可用，如：Dubbo、Kafka 等。
 
-### ZooKeeper 的特性
+### 1.2. ZooKeeper 的应用场景
+
+- 配置管理
+  - 集群节点可以通过中心源获取启动配置
+  - 更简单的部署
+- 分布式集群管理
+  - 节点加入/离开
+  - 节点的实时状态
+- 命名服务，如：DNS
+- 分布式同步：如锁、栅栏、队列
+- 分布式系统的选主
+- 中心化和高可靠的数据注册
+
+### 1.3. ZooKeeper 的特性
 
 ZooKeeper 具有以下特性：
 
@@ -26,16 +78,22 @@ ZooKeeper 具有以下特性：
 - **高性能** - ZooKeeper 将**数据全量存储在内存中**，所以其性能很高。需要注意的是：由于 **ZooKeeper 的所有更新和删除都是基于事务的**，因此 ZooKeeper 在读多写少的应用场景中有性能表现较好，**如果写操作频繁，性能会大大下滑**。
 - **高可用** - ZooKeeper 的高可用是基于副本机制实现的，此外 ZooKeeper 支持故障恢复，可见：[选举 Leader](#选举-Leader)
 
-### ZooKeeper 的设计目标
+### 1.4. ZooKeeper 的设计目标
 
 - 简单的数据模型
 - 可以构建集群
 - 顺序访问
 - 高性能
 
-## 二、ZooKeeper 核心概念
+## 2. ZooKeeper 核心概念
 
-### 数据模型
+### 2.1. 服务
+
+Zookeeper 服务是一个基于主从复制的高可用集群，集群中每个节点都存储了一份数据副本（内存中）。
+
+客户端只会连接一个 ZooKeeper 服务器节点，并维持 TCP 连接。
+
+### 2.2. 数据模型
 
 **ZooKeeper 的数据模型是一个树形结构的文件系统**。
 
@@ -49,10 +107,10 @@ znode 通过路径被引用。**znode 节点路径必须是绝对路径**。
 
 znode 有两种类型：
 
-- **临时的（ `EPHEMERAL` ）** - 户端会话结束时，ZooKeeper 就会删除临时的 znode。
+- **临时的（ `EPHEMERAL` ）** - 户端会话结束时，ZooKeeper 就会删除临时的 znode。不允许有子节点。
 - **持久的（`PERSISTENT` ）** - 除非客户端主动执行删除操作，否则 ZooKeeper 不会删除持久的 znode。
 
-### 节点信息
+### 2.3. 节点信息
 
 znode 上有一个**顺序标志（ `SEQUENTIAL` ）**。如果在创建 znode 时，设置了**顺序标志（ `SEQUENTIAL` ）**，那么 ZooKeeper 会使用计数器为 znode 添加一个单调递增的数值，即 `zxid`。ZooKeeper 正是利用 zxid 实现了严格的顺序访问控制能力。
 
@@ -63,7 +121,7 @@ znode 上有一个**顺序标志（ `SEQUENTIAL` ）**。如果在创建 znode �
 | czxid          | 数据节点创建时的事务 ID                                                                    |
 | ctime          | 数据节点创建时的时间                                                                       |
 | mzxid          | 数据节点最后一次更新时的事务 ID                                                            |
-| mtime          | 数据节点最后一次更新时的时间                                                               |
+| `mtime`        | 数据节点最后一次更新时的时间                                                               |
 | pzxid          | 数据节点的子节点最后一次被修改时的事务 ID                                                  |
 | cversion       | 子节点的更改次数                                                                           |
 | version        | 节点数据的更改次数                                                                         |
@@ -72,15 +130,17 @@ znode 上有一个**顺序标志（ `SEQUENTIAL` ）**。如果在创建 znode �
 | dataLength     | 数据内容的长度                                                                             |
 | numChildren    | 数据节点当前的子节点个数                                                                   |
 
-### 集群角色
+### 2.4. 集群角色
 
-Zookeeper 集群是一个基于主从复制的高可用集群，每个服务器承担如下三种角色中的一种
+Zookeeper 集群是一个基于主从复制的高可用集群，集群中每个节点都存储了一份数据副本（内存中）。此外，每个服务器节点承担如下三种角色中的一种：
 
 - **Leader** - 它负责 **发起并维护与各 Follwer 及 Observer 间的心跳。所有的写操作必须要通过 Leader 完成再由 Leader 将写操作广播给其它服务器**。一个 Zookeeper 集群同一时间只会有一个实际工作的 Leader。
 - **Follower** - 它会**响应 Leader 的心跳。Follower 可直接处理并返回客户端的读请求，同时会将写请求转发给 Leader 处理，并且负责在 Leader 处理写请求时对请求进行投票**。一个 Zookeeper 集群可能同时存在多个 Follower。
 - **Observer** - 角色与 Follower 类似，但是无投票权。
 
-### ACL
+客户端可以从任意 ZooKeeper 服务器节点读取数据，但只能通过 Leader 服务写数据并需要半数以上 Follower 的 ACK，才算写入成功。记住这个重要的知识点，下文会详细讲述。
+
+### 2.5. ACL
 
 **ZooKeeper 采用 ACL（Access Control Lists）策略来进行权限控制**。
 
@@ -100,9 +160,9 @@ ZooKeeper 定义了如下五种权限：
 - **DELETE** - 允许删除子节点；
 - **ADMIN** - 允许为节点设置权限。
 
-## 三、ZooKeeper 工作原理
+## 3. ZooKeeper 工作原理
 
-### 读操作
+### 3.1. 读操作
 
 **Leader/Follower/Observer 都可直接处理读请求，从本地内存中读取数据并返回给客户端即可**。
 
@@ -110,7 +170,7 @@ ZooKeeper 定义了如下五种权限：
 
 ![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/java/javaweb/distributed/rpc/zookeeper/zookeeper_3.png)
 
-### 写操作
+### 3.2. 写操作
 
 所有的写请求实际上都要交给 Leader 处理。Leader 将写请求以事务形式发给所有 Follower 并等待 ACK，一旦收到半数以上 Follower 的 ACK，即认为写操作成功。
 
@@ -139,7 +199,7 @@ ZooKeeper 定义了如下五种权限：
 - Follower/Observer 均可接受写请求，但不能直接处理，而需要将写请求转发给 Leader 处理。
 - 除了多了一步请求转发，其它流程与直接写 Leader 无任何区别。
 
-### 事务
+### 3.3. 事务
 
 对于来自客户端的每个更新请求，ZooKeeper 具备严格的顺序访问控制能力。
 
@@ -157,9 +217,9 @@ ZooKeeper 定义了如下五种权限：
 4. 完成同步后通知 follower 已经成为 uptodate 状态；
 5. Follower 收到 uptodate 消息后，又可以重新接受 client 的请求进行服务了。
 
-### 观察
+### 3.4. 观察
 
-**客户端注册监听它关心的 znode，当 znode 状态发生变化（数据变化、子节点增减变化）时，ZooKeeper 服务会通知客户端**。
+**ZooKeeper 允许客户端监听它关心的 znode，当 znode 状态发生变化（数据变化、子节点增减变化）时，ZooKeeper 服务会通知客户端**。
 
 客户端和服务端保持连接一般有两种形式：
 
@@ -169,6 +229,10 @@ ZooKeeper 定义了如下五种权限：
 Zookeeper 的选择是服务端主动推送状态，也就是观察机制（ `Watch` ）。
 
 ZooKeeper 的观察机制允许用户在指定节点上针对感兴趣的事件注册监听，当事件发生时，监听器会被触发，并将事件信息推送到客户端。
+
+- 监听器实时触发
+- 监听器总是有序的
+- 创建新的 znode 数据前，客户端就能收到监听事件。
 
 客户端使用 `getData` 等接口获取 znode 状态时传入了一个用于处理节点变更的回调，那么服务端就会主动向客户端推送节点的变更：
 
@@ -196,7 +260,7 @@ Zookeeper 中的所有数据其实都是由一个名为 `DataTree` 的数据结�
 
 通知机制的实现其实还是比较简单的，通过读请求设置 `Watcher` 监听事件，写请求在触发事件时就能将通知发送给指定的客户端。
 
-### 会话
+### 3.5. 会话
 
 **ZooKeeper 客户端通过 TCP 长连接连接到 ZooKeeper 服务集群**。**会话 (Session) 从第一次连接开始就已经建立，之后通过心跳检测机制来保持有效的会话状态**。通过这个连接，客户端可以发送请求并接收响应，同时也可以接收到 Watch 事件的通知。
 
@@ -217,7 +281,7 @@ ZooKeeper 的会话具有四个属性：
 
 Zookeeper 的会话管理主要是通过 `SessionTracker` 来负责，其采用了**分桶策略**（将类似的会话放在同一区块中进行管理）进行管理，以便 Zookeeper 对会话进行不同区块的隔离处理以及同一区块的统一处理。
 
-## 四、ZAB 协议
+## 4. ZAB 协议
 
 > ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议。**_ZAB 协议不是 Paxos 算法_**，只是比较类似，二者在操作上并不相同。
 >
@@ -230,7 +294,7 @@ ZAB 协议定义了两个可以**无限循环**的流程：
 - **`选举 Leader`** - 用于故障恢复，从而保证高可用。
 - **`原子广播`** - 用于主从同步，从而保证数据一致性。
 
-### 选举 Leader
+### 4.1. 选举 Leader
 
 > **ZooKeeper 的故障恢复**
 >
@@ -280,7 +344,7 @@ ZAB 协议定义了两个可以**无限循环**的流程：
 - 外部投票的 logicClock 小于自己的 logicClock。当前服务器直接忽略该投票，继续处理下一个投票。
 - 外部投票的 logickClock 与自己的相等。当时进行选票 PK。
 
-（6）**选票 PK** - 选票 PK 是基于(self_id, self_zxid)与(vote_id, vote_zxid)的对比
+（6）**选票 PK** - 选票 PK 是基于`(self_id, self_zxid)` 与 `(vote_id, vote_zxid)` 的对比
 
 - 外部投票的 logicClock 大于自己的 logicClock，则将自己的 logicClock 及自己的选票的 logicClock 变更为收到的 logicClock
 - 若 logicClock 一致，则对比二者的 vote_zxid，若外部投票的 vote_zxid 比较大，则将自己的票中的 vote_zxid 与 vote_myid 更新为收到的票中的 vote_zxid 与 vote_myid 并广播出去，另外将收到的票及自己更新后的票放入自己的票箱。如果票箱内已存在(self_myid, self_zxid)相同的选票，则直接覆盖
@@ -294,7 +358,7 @@ ZAB 协议定义了两个可以**无限循环**的流程：
 
 每个 Server 启动后都会重复以上流程。在恢复模式下，如果是刚从崩溃状态恢复的或者刚启动的 server 还会从磁盘快照中恢复数据和会话信息，zk 会记录事务日志并定期进行快照，方便在恢复时进行状态恢复。
 
-### 原子广播（Atomic Broadcast）
+### 4.2. 原子广播（Atomic Broadcast）
 
 **ZooKeeper 通过副本机制来实现高可用**。
 
@@ -308,23 +372,23 @@ ZAB 协议的原子广播要求：
 
 在整个消息的广播过程中，Leader 服务器会每个事务请求生成对应的 Proposal，并为其分配一个全局唯一的递增的事务 ID(ZXID)，之后再对其进行广播。
 
-## 五、ZooKeeper 应用
+## 5. ZooKeeper 应用
 
 > **ZooKeeper 可以用于发布/订阅、负载均衡、命令服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能** 。
 
-### 命名服务
+### 5.1. 命名服务
 
 在分布式系统中，通常需要一个全局唯一的名字，如生成全局唯一的订单号等，ZooKeeper 可以通过顺序节点的特性来生成全局唯一 ID，从而可以对分布式系统提供命名服务。
 
 ![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200602182548.png)
 
-### 配置管理
+### 5.2. 配置管理
 
 利用 ZooKeeper 的观察机制，可以将其作为一个高可用的配置存储器，允许分布式应用的参与者检索和更新配置文件。
 
-### 分布式锁
+### 5.3. 分布式锁
 
-可以通过 ZooKeeper 的临时节点和 Watcher 机制来实现分布式锁。
+可以通过 ZooKeeper 的临时节点和 Watcher 机制来实现分布式排它锁。
 
 举例来说，有一个分布式系统，有三个节点 A、B、C，试图通过 ZooKeeper 获取分布式锁。
 
@@ -332,9 +396,9 @@ ZAB 协议的原子广播要求：
 
 ![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200602191358.png)
 
-（2）每个节点尝试获取锁时，拿到 `/locks`节点下的所有子节点（`id_0000`,`id_0001`,`id_0002`），**判断自己创建的节点是不是最小的**
+（2）每个节点尝试获取锁时，拿到 `/locks`节点下的所有子节点（`id_0000`,`id_0001`,`id_0002`），**判断自己创建的节点是不是序列号最小的**
 
-- 如果是，则拿到锁。
+- 如果序列号是最小的，则成功获取到锁。
   - 释放锁：执行完操作后，把创建的节点给删掉。
 - 如果不是，则监听比自己要小 1 的节点变化。
 
@@ -346,7 +410,7 @@ ZAB 协议的原子广播要求：
 
 图中，NodeA 删除自己创建的节点 `id_0000`，NodeB 监听到变化，发现自己的节点已经是最小节点，即可获取到锁。
 
-### 集群管理
+### 5.4. 集群管理
 
 ZooKeeper 还能解决大多数分布式系统中的问题：
 
@@ -355,11 +419,11 @@ ZooKeeper 还能解决大多数分布式系统中的问题：
 - 通过数据的订阅和发布功能，ZooKeeper 还能对分布式系统进行模块的解耦和任务的调度。
 - 通过监听机制，还能对分布式系统的服务节点进行动态上下线，从而实现服务的动态扩容。
 
-### 选举 Leader 节点
+### 5.5. 选举 Leader 节点
 
 分布式系统一个重要的模式就是主从模式 (Master/Salves)，ZooKeeper 可以用于该模式下的 Matser 选举。可以让所有服务节点去竞争性地创建同一个 ZNode，由于 ZooKeeper 不能有路径相同的 ZNode，必然只有一个服务节点能够创建成功，这样该服务节点就可以成为 Master 节点。
 
-### 队列管理
+### 5.6. 队列管理
 
 ZooKeeper 可以处理两种类型的队列：
 
@@ -368,9 +432,49 @@ ZooKeeper 可以处理两种类型的队列：
 
 同步队列用 ZooKeeper 实现的实现思路如下：
 
-创建一个父目录 /synchronizing，每个成员都监控标志（Set Watch）位目录 /synchronizing/start 是否存在，然后每个成员都加入这个队列，加入队列的方式就是创建 /synchronizing/member_i 的临时目录节点，然后每个成员获取 / synchronizing 目录的所有目录节点，也就是 member_i。判断 i 的值是否已经是成员的个数，如果小于成员个数等待 /synchronizing/start 的出现，如果已经相等就创建 /synchronizing/start。
+创建一个父目录 `/synchronizing`，每个成员都监控标志（Set Watch）位目录 `/synchronizing/start` 是否存在，然后每个成员都加入这个队列，加入队列的方式就是创建 `/synchronizing/member_i` 的临时目录节点，然后每个成员获取 `/synchronizing` 目录的所有目录节点，也就是 `member_i`。判断 i 的值是否已经是成员的个数，如果小于成员个数等待 `/synchronizing/start` 的出现，如果已经相等就创建 `/synchronizing/start`。
 
-## 参考资料
+## 6. ZooKeeper 的缺点
+
+ZooKeeper 的监听是一次性的。
+
+### 6.1. ZooKeeper 不是为高可用性设计的
+
+生产环境中常常需要通过多机房部署来容灾。出于成本考虑，一般多机房都是同时提供服务的，即一个机房撑不住所有流量。**ZooKeeper 集群只能有一个 Leader**，一旦机房之间连接出现故障，那么只有 Leader 所在的机房可以正常工作，其他机房只能停摆。于是所有流量集中到 Leader 所在的机房，由于处理不过来而导致崩溃。
+
+即使是在同一个机房里面，由于网段的不同，在调整机房交换机的时候偶尔也会发生网段隔离的情况。实际上机房每个月基本上都会发生短暂的网络隔离之类的子网段调整。在那个时刻 ZooKeeper 将处于不可用状态。如果业务系统重度依赖 ZooKeeper（比如用 Dubbo 作为 RPC，且使用 ZooKeeper 作为注册中心），则系统的可用性将非常脆弱。
+
+由于 ZooKeeper 对于网络隔离的极度敏感，导致 ZooKeeper 对于网络的任何风吹草动都会做出激烈反应。这使得 ZooKeeper 的**不可用**时间比较多。我们不能让 ZooKeeper 的**不可用**，变成系统的**不可用**。
+
+### 6.2. ZooKeeper 的选举过程速度很慢
+
+互联网环境中，网络不稳定几乎是必然的，而 ZooKeeper 网络隔离非常敏感。一旦出现网络隔离，zookeeper 就要发起选举流程。
+
+ZooKeeper 的选举流程通常耗时 30 到 120 秒，期间 ZooKeeper 由于没有 Leader，都是不可用的。
+
+对于网络里面偶尔出现的，比如半秒一秒的网络隔离，ZooKeeper 会由于选举过程，而把不可用时间放大几十倍。
+
+### 6.3. ZooKeeper 的性能是有限的
+
+典型的 ZooKeeper 的 TPS 大概是一万多，无法支撑每天动辄几十亿次的调用。因此，每次请求都去 ZooKeeper 获取业务系统信息是不可能的。
+
+为此，ZooKeeper 的 client 必须自己缓存业务系统的信息。这就导致 ZooKeeper 提供的**强一致性**实际上是做不到的。如果我们需要强一致性，还需要其他机制来进行保障：比如用自动化脚本把业务系统的 old master 给 kill 掉，但是这可能会引发很多其他问题。
+
+### 6.4. ZooKeeper 无法进行有效的权限控制
+
+ZooKeeper 的权限控制非常弱。在大型的复杂系统里面，使用 ZooKeeper 必须自己再额外的开发一套权限控制系统，通过那套权限控制系统再访问 ZooKeeper。
+
+额外的权限控制系统不但增加了系统复杂性和维护成本，而且降低了系统的总体性能。
+
+### 6.5. 即使有了 ZooKeeper 也很难避免业务系统的数据不一致
+
+由于 ZooKeeper 的性能限制，我们无法让每次系统内部调用都走 ZooKeeper，因此总有某些时刻，业务系统会存在两份数据（业务系统 client 那边缓存的业务系统信息是定时从 ZooKeeper 更新的，因此会有更新不同步的问题）。
+
+如果要保持数据的强一致性，唯一的方法是“先 kill 掉当前 Leader，再在 ZooKeeper 上更新 Leader 信息”。是否要 kill 掉当前 Leader 这个问题上，程序是无法完全自动决定的（因为网络隔离的时候 ZooKeeper 已经不可用了，自动脚本没有全局信息，不管怎么做都可能是错的，什么都不做也可能是错的。当网络故障的时候，只有运维人员才有全局信息，程序是无法得知其他机房的情况的）。因此系统无法自动的保障数据一致性，必须要人工介入。而人工介入的典型时间是半个小时以上，我们不能让系统这么长时间不可用。因此我们必须在某个方向上进行妥协，最常见的妥协方式是放弃**强一致性**，而接受**最终一致性**。
+
+如果我们需要人工介入才能保证‘可靠的强一致性’，那么 ZooKeeper 的价值就大打折扣。
+
+## 7. 参考资料
 
 - **官方**
   - [ZooKeeper 官网](http://zookeeper.apache.org/)
@@ -385,3 +489,5 @@ ZooKeeper 可以处理两种类型的队列：
   - [ZooKeeper 简介及核心概念](https://github.com/heibaiying/BigData-Notes/blob/master/notes/ZooKeeper%E7%AE%80%E4%BB%8B%E5%8F%8A%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5.md)
   - [详解分布式协调服务 ZooKeeper](https://draveness.me/zookeeper-chubby)
   - [深入浅出 Zookeeper（一） Zookeeper 架构及 FastLeaderElection 机制](http://www.jasongj.com/zookeeper/fastleaderelection/)
+  - [Introduction to Apache ZooKeeper](https://www.slideshare.net/sauravhaloi/introduction-to-apache-zookeeper)
+  - [Zookeeper 的优缺点](https://blog.csdn.net/wwwsq/article/details/7644445)

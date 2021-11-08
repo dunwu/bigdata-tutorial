@@ -38,6 +38,8 @@
   - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
   - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
   - [消息队列高手课](https://time.geekbang.org/column/intro/100032301)
+- **文章**
+  - [Introduction and Overview of Apache Kafka](https://www.slideshare.net/mumrah/kafka-talk-tri-hug)
 
 ## 🚪 传送
 

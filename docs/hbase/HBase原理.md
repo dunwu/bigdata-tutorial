@@ -1,4 +1,4 @@
-# HBase 应用指南
+# HBase 原理
 
 > **_HBase 是一个在 HDFS 上开发的面向列的分布式数据库。_**
 
@@ -30,7 +30,7 @@
 
 <!-- /TOC -->
 
-## 一、HBase 简介
+## HBase 简介
 
 > **HBase 是一个构建在 HDFS（Hadoop 文件系统）之上的面向列的数据库管理系统**。
 >
@@ -79,7 +79,7 @@ HBase 是一种类似于 `Google’s Big Table` 的数据模型，它是 Hadoop 
 - **硬件资源充足**：每个 HDFS 集群在少于 5 个节点的时候，都不能表现的很好。因为 HDFS 默认的复制数量是 3，再加上一个 NameNode。
 - **不需要二级索引，静态类型的列，事务等特性**：一个已经用 RDBMS 的系统想要切换到 Hbase，则需要重新设计系统。
 
-## 二、HBase 表
+## HBase 表
 
 HBase 是一个面向列的数据库，在表中它由行排序。更确切的说，HBase 是一个面向 `列族` 的数据库。HBase 表 仅定义列族，表具有多个列族，每个列族可以包含任意数量的列，列由多个单元格（cell ）组成，单元格可以存储多个版本的数据，多个版本数据以时间戳进行区分。
 
@@ -192,7 +192,7 @@ Hbase 设计时要考虑的因素
 
 Hbase 表设计是和需求相关的，但是遵守表设计的一些硬性指标对性能的提升还是很有帮助的，这里整理了一些设计时用到的要点。
 
-## 三、HBase 存储结构
+## HBase 存储结构
 
 在 HBase 中，表被分割成多个更小的块然后分散的存储在不同的服务器上，这些小块叫做 Regions，存放 Regions 的地方叫做 RegionServer。Master 进程负责处理不同的 RegionServer 之间的 Region 的分发。
 
@@ -231,7 +231,7 @@ Region Server 存取一个子表时，会创建一个 Region 对象，然后对�
 
 ![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200612151239.png)
 
-## 四、HBase 系统架构
+## HBase 系统架构
 
 ![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551164744748.png)
 
@@ -273,7 +273,7 @@ ZooKeeper 的作用：
 
 ![img](https://raw.githubusercontent.com/dunwu/images/dev/cs/bigdata/hbase/1551166447147.png)
 
-## 五、HBase 读写流程
+## HBase 读写流程
 
 ### 写入数据的流程
 

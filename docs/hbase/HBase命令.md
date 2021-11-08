@@ -1,4 +1,4 @@
-# HBase Shell 命令
+# HBase 命令
 
 > 进入 HBase Shell 控制台：`./bin/hbase shell`
 >

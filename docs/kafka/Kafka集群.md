@@ -50,7 +50,7 @@ Kafka 在 ZooKeeper 的关键存储信息：
 > - 客户端会话结束时，ZooKeeper 就会删除临时节点。
 > - 客户端注册监听它关心的节点，当节点状态发生变化（数据变化、子节点增减变化）时，ZooKeeper 服务会通知客户端。
 >
-> 详细内容可以参考：[ZooKeeper 应用指南](https://github.com/dunwu/bigdata-tutorial/blob/master/docs/zookeeper/zookeeper-quickstart.md)
+> 详细内容可以参考：[ZooKeeper 原理](https://github.com/dunwu/bigdata-tutorial/blob/master/docs/zookeeper/ZooKeeper原理.md)
 
 ## 2. 控制器
 
