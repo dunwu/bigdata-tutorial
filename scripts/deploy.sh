@@ -2,7 +2,7 @@
 
 # ------------------------------------------------------------------------------
 # gh-pages 部署脚本
-# @author Zhang Peng
+# @author <a href="mailto:forbreak@163.com">Zhang Peng</a>
 # @since 2020/2/10
 # ------------------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ cd "${ROOT_DIR}/docs"
 
 # 生成静态文件
 npm install
-npm audit fix
 npm run build
 
 # 进入生成的文件夹

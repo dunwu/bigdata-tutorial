@@ -28,7 +28,7 @@
   - [Kafka 官网](http://kafka.apache.org/)
   - [Kafka Github](https://github.com/apache/kafka)
   - [Kafka 官方文档](https://kafka.apache.org/documentation/)
-  - [Confluent 官网](http://kafka.apache.org/)
+  - [Kafka Confluent 官网](http://kafka.apache.org/)
   - [Kafka Jira](https://issues.apache.org/jira/projects/KAFKA?selectedItem=com.atlassian.jira.jira-projects-plugin:components-page)
 - **书籍**
   - [《Kafka 权威指南》](https://item.jd.com/12270295.html)

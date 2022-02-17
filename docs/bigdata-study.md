@@ -26,7 +26,7 @@
 
 ## 大数据处理流程
 
-![img](https://raw.githubusercontent.com/dunwu/images/dev/snap/20200601160205.png)
+![](https://raw.githubusercontent.com/dunwu/images/dev/snap/20220217114216.png)
 
 ### 1.1 数据采集
 

@@ -78,13 +78,45 @@
 ## 📚 资料
 
 - [《Hadoop 权威指南（第四版）》](https://item.jd.com/12109713.html)
-- [《Kafka 权威指南》](https://item.jd.com/12270295.html)
-- [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://item.jd.com/11622772.html)
 - [《Spark 技术内幕 深入解析 Spark 内核架构设计与实现原理》](https://book.douban.com/subject/26649141/)
 - [《Spark.The.Definitive.Guide》](https://book.douban.com/subject/27035127/)
 - [《HBase 权威指南》](https://book.douban.com/subject/10748460/)
 - [《Hive 编程指南》](https://book.douban.com/subject/25791255/)
 - [BigData-Notes](https://github.com/heibaiying/BigData-Notes)
+- **ZooKeeper**
+  - **官方**
+    - [ZooKeeper 官网](http://zookeeper.apache.org/)
+    - [ZooKeeper 官方文档](https://cwiki.apache.org/confluence/display/ZOOKEEPER)
+    - [ZooKeeper Github](https://github.com/apache/zookeeper)
+    - [Apache Curator 官网](http://curator.apache.org/)
+  - **书籍**
+    - [《Hadoop 权威指南（第四版）》](https://item.jd.com/12109713.html)
+    - [《从 Paxos 到 Zookeeper 分布式一致性原理与实践》](https://item.jd.com/11622772.html)
+  - **文章**
+    - [分布式服务框架 ZooKeeper -- 管理分布式环境中的数据](https://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/index.html)
+    - [ZooKeeper 的功能以及工作原理](https://www.cnblogs.com/felixzh/p/5869212.html)
+    - [ZooKeeper 简介及核心概念](https://github.com/heibaiying/BigData-Notes/blob/master/notes/ZooKeeper%E7%AE%80%E4%BB%8B%E5%8F%8A%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5.md)
+    - [详解分布式协调服务 ZooKeeper](https://draveness.me/zookeeper-chubby)
+    - [深入浅出 Zookeeper（一） Zookeeper 架构及 FastLeaderElection 机制](http://www.jasongj.com/zookeeper/fastleaderelection/)
+    - [Introduction to Apache ZooKeeper](https://www.slideshare.net/sauravhaloi/introduction-to-apache-zookeeper)
+    - [Zookeeper 的优缺点](https://blog.csdn.net/wwwsq/article/details/7644445)
+- **Kafka**
+  - **官方**
+    - [Kafka 官网](http://kafka.apache.org/)
+    - [Kafka Github](https://github.com/apache/kafka)
+    - [Kafka 官方文档](https://kafka.apache.org/documentation/)
+    - [Kafka Confluent 官网](http://kafka.apache.org/)
+    - [Kafka Jira](https://issues.apache.org/jira/projects/KAFKA?selectedItem=com.atlassian.jira.jira-projects-plugin:components-page)
+  - **书籍**
+    - [《Kafka 权威指南》](https://item.jd.com/12270295.html)
+    - [《深入理解 Kafka：核心设计与实践原理》](https://item.jd.com/12489649.html)
+    - [《Kafka 技术内幕》](https://item.jd.com/12234113.html)
+  - **教程**
+    - [Kafka 中文文档](https://github.com/apachecn/kafka-doc-zh)
+    - [Kafka 核心技术与实战](https://time.geekbang.org/column/intro/100029201)
+    - [消息队列高手课](https://time.geekbang.org/column/intro/100032301)
+  - **文章**
+    - [Introduction and Overview of Apache Kafka](https://www.slideshare.net/mumrah/kafka-talk-tri-hug)
 
 ## 🚪 传送门
 
