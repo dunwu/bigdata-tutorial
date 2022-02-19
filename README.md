@@ -53,9 +53,11 @@
 >
 > 很多大名鼎鼎的框架都基于 ZooKeeper 来实现分布式高可用，如：Dubbo、Kafka 等。
 
-- [ZooKeeper 应用](docs/zookeeper/ZooKeeper应用.md)
 - [ZooKeeper 原理](docs/zookeeper/ZooKeeper原理.md)
+- [ZooKeeper Java Api](docs/zookeeper/ZooKeeperJavaApi.md)
+- [ZooKeeper 命令](docs/zookeeper/ZooKeeper命令.md)
 - [ZooKeeper 运维](docs/zookeeper/ZooKeeper运维.md)
+- [ZooKeeper ACL](docs/zookeeper/ZooKeeperAcl.md)
 
 ### [Kafka](docs/kafka)
 
@@ -118,6 +120,6 @@
   - **文章**
     - [Introduction and Overview of Apache Kafka](https://www.slideshare.net/mumrah/kafka-talk-tri-hug)
 
-## 🚪 传送门
+## 🚪 传送
 
 ◾ 🏠 [BIGDATA-TUTORIAL 首页](https://github.com/dunwu/bigdata-tutorial) ◾ 🎯 [我的博客](https://github.com/dunwu/blog) ◾
