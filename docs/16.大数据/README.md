@@ -6,6 +6,13 @@ tagline: ☕ BIGDATA TUTORIAL 是一个大数据教程。
 bannerBg: none
 postList: none
 footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
+title: README
+date: 2023-02-10 14:52:25
+permalink: /pages/fc832f/
+categories:
+  - 大数据
+tags:
+  -
 ---
 
 <p align="center">
@@ -28,8 +35,6 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 
 </p>
 
-<h1 align="center">BIGDATA TUTORIAL</h1>
-
 > ☕ **bigdata-tutorial** 是一个大数据教程。
 >
 > - 🔁 项目同步维护：[Github](https://github.com/dunwu/bigdata-tutorial/) | [Gitee](https://gitee.com/turnon/bigdata-tutorial/)
@@ -37,36 +42,36 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 
 ## 📖 内容
 
-### [综合](16.大数据/00.综合)
+### [综合](00.综合)
 
-- [大数据简介](16.大数据/00.综合/01.大数据简介.md)
-- [大数据学习](16.大数据/00.综合/02.大数据学习.md)
+- [大数据简介](00.综合/01.大数据简介.md)
+- [大数据学习](00.综合/02.大数据学习.md)
 
-### [Hadoop](16.大数据/01.hadoop)
+### [Hadoop](01.hadoop)
 
-#### [HDFS](16.大数据/01.hadoop/01.hdfs)
+#### [HDFS](01.hadoop/01.hdfs)
 
-- [HDFS 入门](16.大数据/01.hadoop/01.hdfs/01.HDFS入门.md)
-- [HDFS 运维](16.大数据/01.hadoop/01.hdfs/02.HDFS运维.md)
-- [HDFS Java API](16.大数据/01.hadoop/01.hdfs/03.HDFSJavaApi.md)
+- [HDFS 入门](01.hadoop/01.hdfs/01.HDFS入门.md)
+- [HDFS 运维](01.hadoop/01.hdfs/02.HDFS运维.md)
+- [HDFS Java API](01.hadoop/01.hdfs/03.HDFSJavaApi.md)
 
-### [HIVE](16.大数据/02.hive)
+### [HIVE](02.hive)
 
-- [Hive 入门](16.大数据/02.hive/01.Hive入门.md)
-- [Hive 表](16.大数据/02.hive/02.Hive表.md)
-- [Hive 视图和索引](16.大数据/02.hive/03.Hive视图和索引.md)
-- [Hive 查询](16.大数据/02.hive/04.Hive查询.md)
-- [Hive DDL](16.大数据/02.hive/05.HiveDDL.md)
-- [Hive DML](16.大数据/02.hive/06.HiveDML.md)
-- [Hive 运维](16.大数据/02.hive/07.Hive运维.md)
+- [Hive 入门](02.hive/01.Hive入门.md)
+- [Hive 表](02.hive/02.Hive表.md)
+- [Hive 视图和索引](02.hive/03.Hive视图和索引.md)
+- [Hive 查询](02.hive/04.Hive查询.md)
+- [Hive DDL](02.hive/05.HiveDDL.md)
+- [Hive DML](02.hive/06.HiveDML.md)
+- [Hive 运维](02.hive/07.Hive运维.md)
 
-### [HBASE](16.大数据/03.hbase)
+### [HBASE](03.hbase)
 
-- [HBase 原理](16.大数据/03.hbase/01.HBase原理.md)
-- [HBase 命令](16.大数据/03.hbase/02.HBase命令.md)
-- [HBase 运维](16.大数据/03.hbase/03.HBase运维.md)
+- [HBase 原理](03.hbase/01.HBase原理.md)
+- [HBase 命令](03.hbase/02.HBase命令.md)
+- [HBase 运维](03.hbase/03.HBase运维.md)
 
-### [ZooKeeper](16.大数据/04.zookeeper)
+### [ZooKeeper](04.zookeeper)
 
 > ZooKeeper 是 Apache 的顶级项目。**ZooKeeper 为分布式应用提供了高效且可靠的分布式协调服务，提供了诸如统一命名服务、配置管理和分布式锁等分布式的基础服务。在解决分布式数据一致性方面，ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议**。
 >
@@ -74,11 +79,11 @@ footer: CC-BY-SA-4.0 Licensed | Copyright © 2019-Now Dunwu
 >
 > 很多大名鼎鼎的框架都基于 ZooKeeper 来实现分布式高可用，如：Dubbo、Kafka 等。
 
-- [ZooKeeper 原理](16.大数据/04.zookeeper/01.ZooKeeper原理.md)
-- [ZooKeeper 命令](16.大数据/04.zookeeper/02.ZooKeeper命令.md)
-- [ZooKeeper 运维](16.大数据/04.zookeeper/03.ZooKeeper运维.md)
-- [ZooKeeper Java API](16.大数据/04.zookeeper/04.ZooKeeperJavaApi.md)
-- [ZooKeeper ACL](16.大数据/04.zookeeper/05.ZooKeeperAcl.md)
+- [ZooKeeper 原理](04.zookeeper/01.ZooKeeper原理.md)
+- [ZooKeeper 命令](04.zookeeper/02.ZooKeeper命令.md)
+- [ZooKeeper 运维](04.zookeeper/03.ZooKeeper运维.md)
+- [ZooKeeper Java API](04.zookeeper/04.ZooKeeperJavaApi.md)
+- [ZooKeeper ACL](04.zookeeper/05.ZooKeeperAcl.md)
 
 ### Kafka
 

@@ -1,12 +1,27 @@
 <p align="center">
     <a href="https://dunwu.github.io/bigdata-tutorial/" target="_blank" rel="noopener noreferrer">
-        <img src="https://raw.githubusercontent.com/dunwu/images/dev/common/dunwu-logo-200.png" alt="logo" width="100px">
+        <img src="https://raw.githubusercontent.com/dunwu/images/dev/common/dunwu-logo.png" alt="logo" width="100px">
     </a>
 </p>
 
 <p align="center">
-    <img src="https://badgen.net/github/license/dunwu/bigdata-tutorial" alt="license">
-    <img src="https://travis-ci.com/dunwu/bigdata-tutorial.svg?branch=master" alt="build">
+
+  <a href="https://github.com/dunwu/bigdata-tutorial">
+      <img alt="star" class="no-zoom" src="https://img.shields.io/github/stars/dunwu/bigdata-tutorial?style=for-the-badge">
+  </a>
+
+  <a href="https://github.com/dunwu/bigdata-tutorial">
+      <img alt="fork" class="no-zoom" src="https://img.shields.io/github/forks/dunwu/bigdata-tutorial?style=for-the-badge">
+  </a>
+
+  <a href="https://github.com/dunwu/bigdata-tutorial/commits/master">
+      <img alt="build" class="no-zoom" src="https://img.shields.io/github/actions/workflow/status/dunwu/bigdata-tutorial/deploy.yml?style=for-the-badge">
+  </a>
+
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">
+      <img alt="code style" class="no-zoom" src="https://img.shields.io/github/license/dunwu/bigdata-tutorial?style=for-the-badge">
+  </a>
+
 </p>
 
 <h1 align="center">BIGDATA TUTORIAL</h1>
@@ -15,37 +30,39 @@
 >
 > - 🔁 项目同步维护：[Github](https://github.com/dunwu/bigdata-tutorial/) | [Gitee](https://gitee.com/turnon/bigdata-tutorial/)
 > - 📖 电子书阅读：[Github Pages](https://dunwu.github.io/bigdata-tutorial/) | [Gitee Pages](http://turnon.gitee.io/bigdata-tutorial/)
->
-> 说明：下面的内容清单中，凡是有 📚 标记的技术，都已整理成详细的教程。
 
 ## 📖 内容
 
-### [Kafka](docs/hdfs)
+### [综合](docs/16.大数据/00.综合)
 
-> [HDFS](docs/hdfs) 是一个分布式文件系统。
+- [大数据简介](docs/16.大数据/00.综合/01.大数据简介.md)
+- [大数据学习](docs/16.大数据/00.综合/02.大数据学习.md)
 
-- [HDFS 入门](docs/hdfs/hdfs-quickstart.md)
-- [HDFS 运维](docs/hdfs/hdfs-ops.md)
-- [HDFS Java API](docs/hdfs/hdfs-java-api.md)
+### [Hadoop](docs/16.大数据/01.hadoop)
 
-### [Hive](docs/hive)
+#### [HDFS](docs/16.大数据/01.hadoop/01.hdfs)
 
-- [Hive 入门](docs/hive/hive-quickstart.md)
-- [Hive DDL](docs/hive/hive-ddl.md)
-- [Hive 表](docs/hive/hive-table.md)
-- [Hive 视图和索引](docs/hive/hive-index-and-view.md)
-- [Hive DML](docs/hive/hive-dml.md)
-- [Hive 查询](docs/hive/hive-query.md)
-- [Hive 运维](docs/hive/hive-ops.md)
+- [HDFS 入门](docs/16.大数据/01.hadoop/01.hdfs/01.HDFS入门.md)
+- [HDFS 运维](docs/16.大数据/01.hadoop/01.hdfs/02.HDFS运维.md)
+- [HDFS Java API](docs/16.大数据/01.hadoop/01.hdfs/03.HDFSJavaApi.md)
 
-### [HBASE](docs/hbase)
+### [Hive](docs/16.大数据/02.hive)
 
-- [HBase 原理](docs/hbase/HBase原理.md)
-- [HBase 应用](docs/hbase/HBase应用.md)
-- [HBase 命令](docs/hbase/HBase命令.md)
-- [HBase 运维](docs/hbase/HBase运维.md)
+- [Hive 入门](docs/16.大数据/02.hive/01.Hive入门.md)
+- [Hive 表](docs/16.大数据/02.hive/02.Hive表.md)
+- [Hive 视图和索引](docs/16.大数据/02.hive/03.Hive视图和索引.md)
+- [Hive 查询](docs/16.大数据/02.hive/04.Hive查询.md)
+- [Hive DDL](docs/16.大数据/02.hive/05.HiveDDL.md)
+- [Hive DML](docs/16.大数据/02.hive/06.HiveDML.md)
+- [Hive 运维](docs/16.大数据/02.hive/07.Hive运维.md)
 
-### [ZooKeeper](docs/zookeeper)
+### [HBASE](docs/16.大数据/03.hbase)
+
+- [HBase 原理](docs/16.大数据/03.hbase/01.HBase原理.md)
+- [HBase 命令](docs/16.大数据/03.hbase/02.HBase命令.md)
+- [HBase 运维](docs/16.大数据/03.hbase/03.HBase运维.md)
+
+### [ZooKeeper](docs/16.大数据/04.zookeeper)
 
 > ZooKeeper 是 Apache 的顶级项目。**ZooKeeper 为分布式应用提供了高效且可靠的分布式协调服务，提供了诸如统一命名服务、配置管理和分布式锁等分布式的基础服务。在解决分布式数据一致性方面，ZooKeeper 并没有直接采用 Paxos 算法，而是采用了名为 ZAB 的一致性协议**。
 >
@@ -53,29 +70,24 @@
 >
 > 很多大名鼎鼎的框架都基于 ZooKeeper 来实现分布式高可用，如：Dubbo、Kafka 等。
 
-- [ZooKeeper 原理](docs/zookeeper/ZooKeeper原理.md)
-- [ZooKeeper Java Api](docs/zookeeper/ZooKeeperJavaApi.md)
-- [ZooKeeper 命令](docs/zookeeper/ZooKeeper命令.md)
-- [ZooKeeper 运维](docs/zookeeper/ZooKeeper运维.md)
-- [ZooKeeper ACL](docs/zookeeper/ZooKeeperAcl.md)
+- [ZooKeeper 原理](docs/16.大数据/04.zookeeper/01.ZooKeeper原理.md)
+- [ZooKeeper 命令](docs/16.大数据/04.zookeeper/02.ZooKeeper命令.md)
+- [ZooKeeper 运维](docs/16.大数据/04.zookeeper/03.ZooKeeper运维.md)
+- [ZooKeeper Java API](docs/16.大数据/04.zookeeper/04.ZooKeeperJavaApi.md)
+- [ZooKeeper ACL](docs/16.大数据/04.zookeeper/05.ZooKeeperAcl.md)
 
-### [Kafka](docs/kafka)
+### Kafka
 
-> **[Kafka](docs/kafka) 是一个分布式流处理平台，此外，它也被广泛应用于消息队列**。
+> **[Kafka](https://dunwu.github.io/blog/pages/328f1c/) 是一个分布式流处理平台，此外，它也被广泛应用于消息队列**。
 
-- [Kafka 快速入门](docs/kafka/Kafka快速入门.md)
-- [Kafka 生产者](docs/kafka/Kafka生产者.md)
-- [Kafka 消费者](docs/kafka/Kafka消费者.md)
-- [Kafka 集群](docs/kafka/Kafka集群.md)
-- [Kafka 可靠传输](docs/kafka/Kafka可靠传输.md)
-- [Kafka 存储](docs/kafka/Kafka存储.md)
-- [Kafka 流式处理](docs/kafka/Kafka流式处理.md)
-- [Kafka 运维](docs/kafka/Kafka运维.md)
-
-### 其他
-
-- [MapReduce](docs/mapreduce/mapreduce.md)
-- [YARN](docs/yarn.md)
+- [Kafka 快速入门](https://dunwu.github.io/blog/pages/a697a6/)
+- [Kafka 生产者](https://dunwu.github.io/blog/pages/141b2e/)
+- [Kafka 消费者](https://dunwu.github.io/blog/pages/41a171/)
+- [Kafka 集群](https://dunwu.github.io/blog/pages/fc8f54/)
+- [Kafka 可靠传输](https://dunwu.github.io/blog/pages/481bdd/)
+- [Kafka 存储](https://dunwu.github.io/blog/pages/8de948/)
+- [Kafka 流式处理](https://dunwu.github.io/blog/pages/55f66f/)
+- [Kafka 运维](https://dunwu.github.io/blog/pages/21011e/)
 
 ## 📚 资料
 
@@ -122,4 +134,4 @@
 
 ## 🚪 传送
 
-◾ 🏠 [BIGDATA-TUTORIAL 首页](https://github.com/dunwu/bigdata-tutorial) ◾ 🎯 [我的博客](https://github.com/dunwu/blog) ◾
+◾ 💧 [钝悟的 IT 知识图谱](https://dunwu.github.io/waterdrop/) ◾ 🎯 [钝悟的博客](https://dunwu.github.io/blog/) ◾
